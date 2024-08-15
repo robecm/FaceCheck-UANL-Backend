@@ -1,5 +1,4 @@
 import json
-import time
 import cv2
 import mysql.connector
 
@@ -34,8 +33,8 @@ while True:
         face = gray[y:y+b, x:x+a]
         _, buffer = cv2.imencode(ext='.jpg', img=face)
         face_data = buffer.tobytes()
-        print(face_data)
 
+        print(face_data)
         cursor.execute('INSERT INTO faces (image) VALUES (%s)', (face_data,))
         connection.commit()
 
