@@ -8,7 +8,7 @@ def load_credentials(path):
 
 
 class Database:
-    def __init__(self, credentials_path='modules/credentials.JSON'):
+    def __init__(self, credentials_path='modules/credentials.json'):
         self.credentials = load_credentials(credentials_path)
 
     def db_connection(self):
@@ -29,28 +29,32 @@ class Database:
     def signup_user(self, **kwargs):
         conn = self.db_connection()
         if conn is None:
-            return False
+            return {'success': False, 'error': 'Error de conexión', 'status_code': 500}
 
         kwarg_fields = ['name', 'username', 'age', 'faculty', 'matriculation_num', 'password', 'face_img']
         if not all(field in kwargs for field in kwarg_fields):
-            return False
+            return {'success': False, 'error': 'Faltan campos requeridos', 'status_code': 400}
 
         try:
             cur = conn.cursor()
             query = """
                 INSERT INTO users (name, username, age, faculty, matriculation_num, password, face_img)
-                VALUES (%(name)s, %(username)s, %(age)s, %(faculty)s, %(matriculation_num)s, %(hashed_password)s, %(face_img)s
+                VALUES (%(name)s, %(username)s, %(age)s, %(faculty)s, %(matriculation_num)s, %(hashed_password)s, %(face_img)s)
             """
+            kwargs['hashed_password'] = kwargs.pop('password')  # Hash password and add to kwargs
 
             cur.execute(query, kwargs)
             conn.commit()
             cur.close()
+            conn.close()
+            return {'success': True, 'error': None, 'status_code': 201}
 
-            return True
-
-        except Exception as e:
-            print(f'Error al insertar usuario: {e}')
-            return False
+        except psycopg2.Error as e:
+            error_code = e.pgcode  # Capture PostgreSQL error code
+            error_message = e.pgerror  # Capture PostgreSQL error message
+            print(f'Error al insertar usuario: {error_message}')
+            conn.close()
+            return {'success': False, 'error': error_message, 'status_code': 500, 'error_code': error_code}
 
         finally:
             conn.close()
@@ -59,4 +63,3 @@ class Database:
     def close_conn(conn):
         if conn:
             conn.close()
-

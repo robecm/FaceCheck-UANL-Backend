@@ -9,7 +9,7 @@ db = Database()
 @user_signup_bp.route('/signup-user', methods=['POST'])
 def signup_user():
     try:
-        body = request.get_json()   # GET REQUEST
+        body = request.get_json()  # GET REQUEST
 
         # EXTRACT THE INFO FROM THE REQUEST'S BODY
         user_data = {
@@ -30,25 +30,29 @@ def signup_user():
             }), 400
 
         # HASH PASSWORD
-        user_data['hashed_password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt())
+        user_data['hashed_password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         del user_data['password']  # REMOVE UNCRYPTED PWD
 
         # INSERT USER DATA INTO DATABASE
-        insert_success = db.signup_user(
+        result = db.signup_user(
             name=user_data['name'],
             username=user_data['username'],
             age=user_data['age'],
             faculty=user_data['faculty'],
             matriculation_num=user_data['matriculation_num'],
-            hashed_password=user_data['hashed_password'],
+            password=user_data['hashed_password'],
             face_img=user_data['face_img']
         )
 
-        # VALIDATE IF INSERTION WAS SUCCESFUL
-        if insert_success:
-            return jsonify({'message': 'Usuario registrado con exito'}), 201
+        # VALIDATE IF INSERTION WAS SUCCESSFUL
+        if result['success']:
+            return jsonify({'message': 'Usuario registrado con éxito'}), result['status_code']
         else:
-            return jsonify({'message': 'Error al registrar al usuario'}), 500
+            return jsonify({
+                'message': 'Error al registrar al usuario',
+                'error': result['error'],
+                'error_code': result.get('error_code')
+            }), result['status_code']
 
     except Exception as e:
         return jsonify({
