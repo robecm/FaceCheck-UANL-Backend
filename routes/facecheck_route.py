@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from facecheck.facecheck import FaceCheck
+from modules.facecheck import FaceCheck, Base64
 
 facecheck_bp = Blueprint('facecheck', __name__)
 
@@ -22,8 +22,8 @@ def verify_face():
 
         # CONVERT BASE64 STRINGS BACK INTO IMAGES
         facecheck = FaceCheck()
-        cap_frame = facecheck.decode_base64(cap_frame_base64)
-        ref_frame = facecheck.decode_base64(ref_frame_base64)
+        cap_frame = Base64.decode_base64(cap_frame_base64)
+        ref_frame = Base64.decode_base64(ref_frame_base64)
 
         face_match = facecheck.check_match(cap_frame, ref_frame)    # CHECK FACE MATCH
 
