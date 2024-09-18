@@ -8,6 +8,7 @@ db = Database()
 # Constants for error messages
 BAD_REQUEST_MSG = 'All fields must be present.'
 
+
 @user_signup_bp.route('/signup-user', methods=['POST'])
 def signup_user():
     try:
@@ -35,7 +36,8 @@ def signup_user():
         }
 
         # Hash la contraseña y eliminar la versión en texto plano
-        user_data['hashed_password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        user_data['hashed_password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt()).decode(
+            'utf-8')
         del user_data['password']  # Eliminar la contraseña en texto plano
 
         # Intentar registrar el usuario en la base de datos
@@ -57,7 +59,8 @@ def signup_user():
             return jsonify({
                 'message': 'Error registering user',
                 'error': result['error'],
-                'error_code': result.get('error_code')
+                'error_code': result.get('status_code'),
+                'duplicate_field': result['duplicate_field']
             }), result['status_code']
 
     except Exception as e:

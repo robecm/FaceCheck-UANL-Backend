@@ -11,6 +11,7 @@ USER_NOT_FOUND_MSG = 'User not found.'
 INCORRECT_PASSWORD_MSG = 'Incorrect password.'
 SUCCESSFUL_LOGIN_MSG = 'Successful login.'
 
+
 @user_login_bp.route('/login-user', methods=['POST'])
 def login_user():
     try:
@@ -35,7 +36,7 @@ def login_user():
             return jsonify({
                 'message': 'Bad Request',
                 'error': BAD_REQUEST_MSG
-            }), 400
+            }), 401
 
         # Obtener los datos del usuario registrado por su número de matrícula
         user_registered_data = db.get_user_by_matnum(user_entered_data['matnum'])
@@ -45,7 +46,7 @@ def login_user():
             return jsonify({
                 'message': 'Unauthorized',
                 'error': USER_NOT_FOUND_MSG
-            }), 401
+            }), 402
 
         # Log para verificar los datos del usuario recuperado
         print("Datos del usuario recuperado:", user_registered_data)
@@ -64,7 +65,7 @@ def login_user():
             return jsonify({
                 'message': 'Unauthorized',
                 'error': INCORRECT_PASSWORD_MSG
-            }), 401
+            }), 403
 
     except Exception as e:
         # Log para capturar el mensaje completo de la excepción
