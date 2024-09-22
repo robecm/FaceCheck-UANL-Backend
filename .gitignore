@@ -1,4 +1,5 @@
 /modules/credentials.JSON
-/ngrok.exe
+/static/ngrok.exe
 /request_test.py
 /faces.json
+/static/ngrok_tunnel.bat
