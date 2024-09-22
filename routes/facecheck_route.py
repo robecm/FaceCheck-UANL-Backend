@@ -3,10 +3,12 @@ from modules.facecheck import FaceCheck, Base64
 
 facecheck_bp = Blueprint('facecheck', __name__)
 
+
 def decode_images(cap_frame_base64, ref_frame_base64):
     cap_frame = Base64.decode_base64(cap_frame_base64)
     ref_frame = Base64.decode_base64(ref_frame_base64)
     return cap_frame, ref_frame
+
 
 @facecheck_bp.route('/verify-face', methods=['POST'])
 def verify_face():
