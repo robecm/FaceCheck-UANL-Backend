@@ -3,11 +3,13 @@ import json
 from contextlib import contextmanager
 
 
+# Function to load database credentials from a JSON file
 def load_credentials(path):
     with open(path, 'r') as file:
         return json.load(file)
 
 
+# Context manager for database connection
 @contextmanager
 def db_connection(credentials):
     conn = None
@@ -28,20 +30,22 @@ def db_connection(credentials):
             conn.close()
 
 
+# Database class to handle user operations
 class Database:
     def __init__(self, credentials_path='modules/credentials.json'):
         self.credentials = load_credentials(credentials_path)
 
+    # Method to sign up a new user
     def signup_user(self, **kwargs):
         user_fields = ['name', 'username', 'age', 'faculty', 'matnum', 'password', 'face_img', 'email']
         if not all(field in kwargs for field in user_fields):
-            return {'success': False, 'error': 'Missing required fields', 'status_code': 400}
+            return self.generate_response(success=False, error='Missing required fields', status_code=400)
 
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor()
 
-                # Insertar el nuevo usuario
+                # Insert the new user
                 query = """
                     INSERT INTO users (name, username, age, faculty, matnum, password, face_img, email)
                     VALUES (%(name)s, %(username)s, %(age)s, %(faculty)s, %(matnum)s, %(password)s, %(face_img)s, %(email)s)
@@ -49,31 +53,32 @@ class Database:
                 cur.execute(query, kwargs)
                 conn.commit()
                 cur.close()
-                return {'success': True, 'error': None, 'status_code': 201}
+                return self.generate_response(success=True, error=None, status_code=201)
 
             except psycopg2.Error as e:
                 error_message = e.pgerror
                 print(f'Error registering user: {error_message}')
 
-                # Verificamos si es un error de duplicación
-                if e.pgcode == '23505':  # Código para UNIQUE constraint violation
+                # Check for duplication error
+                if e.pgcode == '23505':  # Code for UNIQUE constraint violation
                     duplicate_field = None
 
-                    # Ciclar por todos los campos para buscar el que causó el error
+                    # Loop through all fields to find the one that caused the error
                     for field in user_fields:
                         if field in error_message:
                             duplicate_field = field
-                            break  # Sale del ciclo cuando encuentra el campo duplicado
+                            break  # Exit loop when duplicate field is found
 
-                    return {
-                        'success': False,
-                        'error': f'The {duplicate_field} already exists. Please choose a different value.',
-                        'status_code': 409,
-                        'duplicate_field': duplicate_field
-                    }
+                    return self.generate_response(
+                        success=False,
+                        error=f'The {duplicate_field} already exists. Please choose a different value.',
+                        status_code=409,
+                        duplicate_field=duplicate_field
+                    )
 
-                return {'success': False, 'error': error_message, 'status_code': 500, 'error_code': e.pgcode}
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
+    # Method to get user by matriculation number
     def get_user_by_matnum(self, matnum):
         with db_connection(self.credentials) as conn:
             try:
@@ -86,13 +91,25 @@ class Database:
                 cur.close()
 
                 if result:
-                    return {
-                        'password': result[0],
-                        'face_img': result[1]
-                    }
+                    return self.generate_response(
+                        success=True,
+                        data={'password': result[0], 'face_img': result[1]},
+                        status_code=200
+                    )
                 else:
-                    return None
+                    return self.generate_response(success=False, error='User not found', status_code=404)
 
             except Exception as e:
                 print(f'Error searching user: {e}')
-                return None
+                return self.generate_response(success=False, error=str(e), status_code=500)
+
+    # Private method to generate a consistent JSON response
+    @staticmethod
+    def generate_response(success, error=None, status_code=200, **kwargs):
+        response = {
+            'success': success,
+            'error': error,
+            'status_code': status_code
+        }
+        response.update(kwargs)
+        return response

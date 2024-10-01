@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from modules.facecheck import FaceCheck, Base64
+from modules.database import Database  # Import the Database class
 
 facecheck_bp = Blueprint('facecheck', __name__)
 
@@ -19,24 +20,31 @@ def verify_face():
         ref_frame_base64 = body.get('ref_frame')
 
         if not (cap_frame_base64 and ref_frame_base64):
-            return jsonify({
-                'message': 'Bad Request',
-                'error': 'Both images must be present.'
-            }), 400
+            return jsonify(Database.generate_response(
+                success=False,
+                error='Both images must be present.',
+                status_code=400
+            )), 400
 
         cap_frame, ref_frame = decode_images(cap_frame_base64, ref_frame_base64)
 
         face_match = FaceCheck().check_match(cap_frame, ref_frame)
 
-        return jsonify({'match': face_match}), 200
+        return jsonify(Database.generate_response(
+            success=True,
+            data={'match': face_match},
+            status_code=200
+        )), 200
 
     except ValueError as ve:
-        return jsonify({
-            'message': 'Bad Request',
-            'error': str(ve)
-        }), 400
+        return jsonify(Database.generate_response(
+            success=False,
+            error=str(ve),
+            status_code=400
+        )), 400
     except Exception as e:
-        return jsonify({
-            'message': 'Internal server error',
-            'error': str(e)
-        }), 500
+        return jsonify(Database.generate_response(
+            success=False,
+            error=str(e),
+            status_code=500
+        )), 500

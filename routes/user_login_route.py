@@ -20,10 +20,11 @@ def login_user():
 
         # Validar que el JSON no sea None o vacío
         if not body:
-            return jsonify({
-                'message': 'Bad Request',
-                'error': 'No JSON data provided'
-            }), 400
+            return jsonify(Database.generate_response(
+                success=False,
+                error='No JSON data provided',
+                status_code=400
+            )), 400
 
         # Extraer 'matnum' y 'password' del cuerpo del JSON
         user_entered_data = {
@@ -33,44 +34,49 @@ def login_user():
 
         # Validar que ambos campos no estén vacíos
         if not user_entered_data['matnum'] or not user_entered_data['password']:
-            return jsonify({
-                'message': 'Bad Request',
-                'error': BAD_REQUEST_MSG
-            }), 401
+            return jsonify(Database.generate_response(
+                success=False,
+                error=BAD_REQUEST_MSG,
+                status_code=401
+            )), 401
 
         # Obtener los datos del usuario registrado por su número de matrícula
         user_registered_data = db.get_user_by_matnum(user_entered_data['matnum'])
 
         # Verificar si el usuario fue encontrado
         if not user_registered_data:
-            return jsonify({
-                'message': 'Unauthorized',
-                'error': USER_NOT_FOUND_MSG
-            }), 402
+            return jsonify(Database.generate_response(
+                success=False,
+                error=USER_NOT_FOUND_MSG,
+                status_code=402
+            )), 402
 
         # Log para verificar los datos del usuario recuperado
         print("Datos del usuario recuperado:", user_registered_data)
 
         # Comparar la contraseña introducida con la almacenada en la base de datos
-        hashed_password = user_registered_data['password']
-        face_img_base64 = user_registered_data['face_img']
+        hashed_password = user_registered_data['data']['password']
+        face_img_base64 = user_registered_data['data']['face_img']
 
         # Verificar si la contraseña ingresada coincide
         if bcrypt.checkpw(user_entered_data['password'].encode('utf-8'), hashed_password.encode('utf-8')):
-            return jsonify({
-                'message': SUCCESSFUL_LOGIN_MSG,
-                'face_img': face_img_base64
-            }), 200
+            return jsonify(Database.generate_response(
+                success=True,
+                data={'message': SUCCESSFUL_LOGIN_MSG, 'face_img': face_img_base64},
+                status_code=200
+            )), 200
         else:
-            return jsonify({
-                'message': 'Unauthorized',
-                'error': INCORRECT_PASSWORD_MSG
-            }), 403
+            return jsonify(Database.generate_response(
+                success=False,
+                error=INCORRECT_PASSWORD_MSG,
+                status_code=403
+            )), 403
 
     except Exception as e:
         # Log para capturar el mensaje completo de la excepción
         print(f"Error: {e}")
-        return jsonify({
-            'message': 'Internal Server Error',
-            'error': str(e)
-        }), 500
+        return jsonify(Database.generate_response(
+            success=False,
+            error=str(e),
+            status_code=500
+        )), 500
