@@ -18,53 +18,37 @@ def signup_user():
         required_fields = ['name', 'username', 'age', 'faculty', 'matnum', 'password', 'face_img', 'email']
         for field in required_fields:
             if field not in body or not body[field]:
-                return jsonify({
-                    'message': 'Bad Request',
-                    'error': f'Missing field: {field}'
-                }), 400
+                return jsonify(Database.generate_response(
+                    success=False,
+                    error=f'Missing field: {field}',
+                    status_code=400
+                )), 400
 
-        # Extraer los datos del usuario
-        user_data = {
-            'name': body['name'],
-            'username': body['username'],
-            'age': body['age'],
-            'faculty': body['faculty'],
-            'matnum': body['matnum'],
-            'password': body['password'],
-            'face_img': body['face_img'],
-            'email': body['email']
-        }
-
-        # Hash la contraseña y eliminar la versión en texto plano
-        user_data['hashed_password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt()).decode(
-            'utf-8')
-        del user_data['password']  # Eliminar la contraseña en texto plano
+        # Extraer y procesar los datos del usuario
+        user_data = {field: body[field] for field in required_fields}
+        user_data['password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
         # Intentar registrar el usuario en la base de datos
-        result = db.signup_user(
-            name=user_data['name'],
-            username=user_data['username'],
-            age=user_data['age'],
-            faculty=user_data['faculty'],
-            matnum=user_data['matnum'],
-            password=user_data['hashed_password'],
-            face_img=user_data['face_img'],
-            email=user_data['email']
-        )
+        result = db.signup_user(**user_data)
 
         # Verificar si el registro fue exitoso
         if result['success']:
-            return jsonify({'message': 'User registered successfully'}), result['status_code']
+            return jsonify(Database.generate_response(
+                success=True,
+                data={'message': 'User registered successfully'},
+                status_code=201
+            )), 201
         else:
-            return jsonify({
-                'message': 'Error registering user',
-                'error': result['error'],
-                'error_code': result.get('status_code'),
-                'duplicate_field': result['duplicate_field']
-            }), result['status_code']
+            return jsonify(Database.generate_response(
+                success=False,
+                error=result['error'],
+                status_code=result['status_code'],
+                duplicate_field=result.get('duplicate_field')
+            )), result['status_code']
 
     except Exception as e:
-        return jsonify({
-            'message': 'Internal server error',
-            'error': str(e)
-        }), 500
+        return jsonify(Database.generate_response(
+            success=False,
+            error=str(e),
+            status_code=500
+        )), 500

@@ -6,6 +6,8 @@ info:
 servers:
   - url: http://localhost:5000
     description: Servidor local
+  - url: https://living-improved-ocelot.ngrok-free.app/
+    description: Servidor en linea
 
 paths:
   /api/signup-user:
@@ -62,8 +64,15 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
         '400':
           description: Faltan campos en la solicitud
           content:
@@ -71,10 +80,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  success:
+                    type: boolean
                   error:
                     type: string
+                  status_code:
+                    type: integer
         '409':
           description: Usuario ya registrado
           content:
@@ -82,10 +93,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  success:
+                    type: boolean
                   error:
                     type: string
+                  status_code:
+                    type: integer
                   duplicate_field:
                     type: string
                     description: Campo que causa la violación de unicidad (username, matnum o email).
@@ -96,10 +109,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  success:
+                    type: boolean
                   error:
                     type: string
+                  status_code:
+                    type: integer
 
   /api/login-user:
     post:
@@ -129,12 +144,19 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
-                  face_img:
-                    type: string
-                    format: base64
-                    description: Imagen de rostro en base64.
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                      face_img:
+                        type: string
+                        format: base64
+                        description: Imagen de rostro en base64.
+                  status_code:
+                    type: integer
         '401':
           description: Solicitud incorrecta, campos faltantes
           content:
@@ -142,10 +164,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  success:
+                    type: boolean
                   error:
                     type: string
+                  status_code:
+                    type: integer
         '402':
           description: Usuario no encontrado
           content:
@@ -153,10 +177,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  success:
+                    type: boolean
                   error:
                     type: string
+                  status_code:
+                    type: integer
         '403':
           description: Contraseña incorrecta
           content:
@@ -164,10 +190,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  success:
+                    type: boolean
                   error:
                     type: string
+                  status_code:
+                    type: integer
         '500':
           description: Error interno del servidor
           content:
@@ -175,10 +203,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  success:
+                    type: boolean
                   error:
                     type: string
+                  status_code:
+                    type: integer
 
   /api/verify-face:
     post:
@@ -210,9 +240,15 @@ paths:
               schema:
                 type: object
                 properties:
-                  match:
+                  success:
                     type: boolean
-                    description: Indica si los rostros coinciden.
+                  data:
+                    type: object
+                    properties:
+                      match:
+                        type: boolean
+                  status_code:
+                    type: integer
         '400':
           description: Solicitud incorrecta, falta alguna imagen o hay un error en los datos proporcionados.
           content:
@@ -220,10 +256,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  success:
+                    type: boolean
                   error:
                     type: string
+                  status_code:
+                    type: integer
         '500':
           description: Error interno del servidor
           content:
@@ -231,7 +269,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
+                  success:
+                    type: boolean
                   error:
                     type: string
+                  status_code:
+                    type: integer
