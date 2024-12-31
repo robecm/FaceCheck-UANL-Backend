@@ -28,20 +28,6 @@ Para instalar y configurar el entorno de desarrollo, sigue estos pasos:
    pip install -r requirements.txt
    ```
 
-## Uso
-
-Para ejecutar la aplicación, utiliza los siguientes comandos:
-
-1. Iniciar el backend:
-   ```bash
-   python path/to/your/backend_script.py
-   ```
-
-2. Ejecutar la aplicación móvil:
-   ```bash
-   python path/to/your/frontend_script.py
-   ```
-
 ## Contribuir
 
 Si deseas contribuir al proyecto, por favor sigue estos pasos:
