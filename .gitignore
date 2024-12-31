@@ -3,3 +3,5 @@
 /request_test.py
 /faces.json
 /static/ngrok_tunnel.bat
+/.venv/
+/.idea/
