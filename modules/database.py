@@ -47,7 +47,7 @@ class Database:
 
                 # Insert the new user
                 query = """
-                    INSERT INTO users (name, username, age, faculty, matnum, password, face_img, email)
+                    INSERT INTO users_students (name, username, age, faculty, matnum, password, face_img, email)
                     VALUES (%(name)s, %(username)s, %(age)s, %(faculty)s, %(matnum)s, %(password)s, %(face_img)s, %(email)s)
                 """
                 cur.execute(query, kwargs)
@@ -84,7 +84,7 @@ class Database:
             try:
                 cur = conn.cursor()
                 query = """
-                    SELECT password, face_img FROM users WHERE matnum = %s
+                    SELECT password, face_img FROM users_students WHERE matnum = %s
                 """
                 cur.execute(query, (matnum,))
                 result = cur.fetchone()

@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: API de Verificación de Rostros y Usuarios
   description: API para la verificación de rostros, inicio de sesión y registro de usuarios.
-  version: 1.0.0
+  version: 1.0.1
 servers:
   - url: http://localhost:5000
     description: Servidor local
@@ -157,7 +157,7 @@ paths:
                         description: Imagen de rostro en base64.
                   status_code:
                     type: integer
-        '401':
+        '400':
           description: Solicitud incorrecta, campos faltantes
           content:
             application/json:
