@@ -2,20 +2,20 @@ from flask import Blueprint, request, jsonify
 from modules.database import Database
 import bcrypt
 
-user_signup_bp = Blueprint('user_signup', __name__)
+teacher_signup_bp = Blueprint('teacher_signup', __name__)
 db = Database()
 
 # Constants for error messages
 BAD_REQUEST_MSG = 'All fields must be present.'
 
 
-@user_signup_bp.route('/signup-user', methods=['POST'])
-def signup_user():
+@teacher_signup_bp.route('/teacher-signup', methods=['POST'])
+def teacher_signup():
     try:
         body = request.get_json()
 
         # Validar que los campos requeridos estén presentes
-        required_fields = ['name', 'username', 'age', 'faculty', 'matnum', 'password', 'face_img', 'email']
+        required_fields = ['name', 'username', 'age', 'faculty', 'worknum', 'password', 'face_img', 'email']
         for field in required_fields:
             if field not in body or not body[field]:
                 return jsonify(Database.generate_response(
@@ -29,7 +29,7 @@ def signup_user():
         user_data['password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
         # Intentar registrar el usuario en la base de datos
-        result = db.signup_user(**user_data)
+        result = db.teacher_signup(**user_data)
 
         # Verificar si el registro fue exitoso
         if result['success']:
