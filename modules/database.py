@@ -103,6 +103,30 @@ class Database:
                 print(f'Error searching user: {e}')
                 return self.generate_response(success=False, error=str(e), status_code=500)
 
+    def get_user_by_worknum(self, worknum):
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor()
+                query = """
+                       SELECT password, face_img FROM users_teachers WHERE worknum = %s
+                   """
+                cur.execute(query, (worknum,))
+                result = cur.fetchone()
+                cur.close()
+
+                if result:
+                    return self.generate_response(
+                        success=True,
+                        data={'password': result[0], 'face_img': result[1]},
+                        status_code=200
+                    )
+                else:
+                    return self.generate_response(success=False, error='User not found', status_code=404)
+
+            except Exception as e:
+                print(f'Error searching user: {e}')
+                return self.generate_response(success=False, error=str(e), status_code=500)
+
     # Private method to generate a consistent JSON response
     @staticmethod
     def generate_response(success, error=None, status_code=200, **kwargs):

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from modules.database import Database
 import bcrypt
 
-user_login_bp = Blueprint('user_login', __name__)
+student_login_bp = Blueprint('student_login', __name__)
 db = Database()
 
 # Constants for messages
@@ -12,8 +12,8 @@ INCORRECT_PASSWORD_MSG = 'Incorrect password.'
 SUCCESSFUL_LOGIN_MSG = 'Successful login.'
 
 
-@user_login_bp.route('/login-user', methods=['POST'])
-def login_user():
+@student_login_bp.route('/student-login', methods=['POST'])
+def student_login():
     try:
         # Obtener los datos del JSON enviado en la solicitud
         body = request.get_json()
@@ -74,7 +74,7 @@ def login_user():
 
     except Exception as e:
         # Log para capturar el mensaje completo de la excepción
-        print(f"Error: {e}")
+        print(f"Exception: {e}")
         return jsonify(Database.generate_response(
             success=False,
             error=str(e),
