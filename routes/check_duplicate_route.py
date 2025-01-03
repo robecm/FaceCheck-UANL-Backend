@@ -1,0 +1,38 @@
+from flask import Blueprint, request, jsonify
+from modules.database import Database
+
+check_duplicate_bp = Blueprint('check_duplicate', __name__)
+db = Database()
+
+@check_duplicate_bp.route('/check-duplicate', methods=['POST'])
+def check_duplicate():
+    try:
+        body = request.get_json()
+
+        # Validate that the required fields are present
+        required_fields = ['email', 'matnum', 'username']
+        for field in required_fields:
+            if field not in body or not body[field]:
+                return jsonify(Database.generate_response(
+                    success=False,
+                    error=f'Missing field: {field}',
+                    status_code=400
+                )), 400
+
+        # Extract user data
+        email = body['email']
+        matnum = body['matnum']
+        username = body['username']
+
+        # Check for duplicate user
+        result = db.check_user_exists(email, matnum, username)
+
+        # Return the result
+        return jsonify(result), result['status_code']
+
+    except Exception as e:
+        return jsonify(Database.generate_response(
+            success=False,
+            error=str(e),
+            status_code=500
+        )), 500

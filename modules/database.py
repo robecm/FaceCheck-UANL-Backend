@@ -171,6 +171,37 @@ class Database:
                 print(f'Error searching user: {e}')
                 return self.generate_response(success=False, error=str(e), status_code=500)
 
+    # Method to check if a user already exists based on email, matnum, or username
+    def check_user_exists(self, email, matnum, username):
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor()
+                query = """
+                    SELECT 'email' AS field FROM users_students WHERE email = %s
+                    UNION
+                    SELECT 'matnum' AS field FROM users_students WHERE matnum = %s
+                    UNION
+                    SELECT 'username' AS field FROM users_students WHERE username = %s
+                    UNION
+                    SELECT 'email' AS field FROM users_teachers WHERE email = %s
+                    UNION
+                    SELECT 'worknum' AS field FROM users_teachers WHERE worknum = %s
+                    UNION
+                    SELECT 'username' AS field FROM users_teachers WHERE username = %s
+                """
+                cur.execute(query, (email, matnum, username, email, matnum, username))
+                result = cur.fetchone()
+                cur.close()
+
+                if result:
+                    return self.generate_response(success=False, error='User already exists', status_code=409, duplicate_field=result[0])
+                else:
+                    return self.generate_response(success=True, error=None, status_code=200)
+
+            except Exception as e:
+                print(f'Error checking user existence: {e}')
+                return self.generate_response(success=False, error=str(e), status_code=500)
+
     # Private method to generate a consistent JSON response
     @staticmethod
     def generate_response(success, error=None, status_code=200, **kwargs):

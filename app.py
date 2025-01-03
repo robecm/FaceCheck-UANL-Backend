@@ -4,6 +4,7 @@ from routes.student_signup_route import student_signup_bp
 from routes.student_login_route import student_login_bp
 from routes.teacher_login_route import teacher_login_bp
 from routes.teacher_signup_route import teacher_signup_bp
+from routes.check_duplicate_route import check_duplicate_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 import subprocess
 
@@ -27,6 +28,8 @@ app.register_blueprint(teacher_signup_bp, url_prefix='/api')
 app.register_blueprint(student_login_bp, url_prefix='/api')
 # Register the teacher login blueprint
 app.register_blueprint(teacher_login_bp, url_prefix='/api')
+# Register the check duplicate blueprint
+app.register_blueprint(check_duplicate_bp, url_prefix='/api')
 
 # Start a new command prompt and run the ngrok tunnel script
 # subprocess.Popen(['start', 'cmd', '/k', r'static\ngrok_tunnel.bat'], shell=True)

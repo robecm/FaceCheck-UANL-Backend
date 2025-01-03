@@ -10,10 +10,10 @@ servers:
     description: Servidor en linea
 
 paths:
-  /api/signup-user:
+  /api/student-signup:
     post:
-      summary: Registrar usuario
-      description: Registra un nuevo usuario proporcionando los datos necesarios.
+      summary: Registrar estudiante
+      description: Registra un nuevo estudiante proporcionando los datos necesarios.
       requestBody:
         required: true
         content:
@@ -23,22 +23,22 @@ paths:
               properties:
                 name:
                   type: string
-                  description: Nombre completo del usuario.
+                  description: Nombre completo del estudiante.
                 username:
                   type: string
                   description: Nombre de usuario.
                 age:
                   type: integer
-                  description: Edad del usuario.
+                  description: Edad del estudiante.
                 faculty:
                   type: string
-                  description: Facultad a la que pertenece el usuario.
+                  description: Facultad a la que pertenece el estudiante.
                 matnum:
                   type: string
                   description: Número de matrícula.
                 password:
                   type: string
-                  description: Contraseña del usuario.
+                  description: Contraseña del estudiante.
                 face_img:
                   type: string
                   format: base64
@@ -46,7 +46,7 @@ paths:
                 email:
                   type: string
                   format: email
-                  description: Correo electrónico del usuario.
+                  description: Correo electrónico del estudiante.
               required:
                 - name
                 - username
@@ -58,7 +58,7 @@ paths:
                 - email
       responses:
         '201':
-          description: Registro de usuario exitoso
+          description: Registro de estudiante exitoso
           content:
             application/json:
               schema:
@@ -87,7 +87,7 @@ paths:
                   status_code:
                     type: integer
         '409':
-          description: Usuario ya registrado
+          description: Estudiante ya registrado
           content:
             application/json:
               schema:
@@ -116,10 +116,10 @@ paths:
                   status_code:
                     type: integer
 
-  /api/login-user:
+  /api/student-login:
     post:
-      summary: Iniciar sesión de usuario
-      description: Permite a un usuario iniciar sesión proporcionando su número de matrícula y contraseña.
+      summary: Iniciar sesión de estudiante
+      description: Permite a un estudiante iniciar sesión proporcionando su número de matrícula y contraseña.
       requestBody:
         required: true
         content:
@@ -129,10 +129,10 @@ paths:
               properties:
                 matnum:
                   type: string
-                  description: Número de matrícula del usuario.
+                  description: Número de matrícula del estudiante.
                 password:
                   type: string
-                  description: Contraseña del usuario.
+                  description: Contraseña del estudiante.
               required:
                 - matnum
                 - password
@@ -171,7 +171,207 @@ paths:
                   status_code:
                     type: integer
         '402':
-          description: Usuario no encontrado
+          description: Estudiante no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '403':
+          description: Contraseña incorrecta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/teacher-signup:
+    post:
+      summary: Registrar profesor
+      description: Registra un nuevo profesor proporcionando los datos necesarios.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Nombre completo del profesor.
+                username:
+                  type: string
+                  description: Nombre de usuario.
+                age:
+                  type: integer
+                  description: Edad del profesor.
+                faculty:
+                  type: string
+                  description: Facultad a la que pertenece el profesor.
+                worknum:
+                  type: string
+                  description: Número de trabajo.
+                password:
+                  type: string
+                  description: Contraseña del profesor.
+                face_img:
+                  type: string
+                  format: base64
+                  description: Imagen de rostro en base64.
+                email:
+                  type: string
+                  format: email
+                  description: Correo electrónico del profesor.
+              required:
+                - name
+                - username
+                - age
+                - faculty
+                - worknum
+                - password
+                - face_img
+                - email
+      responses:
+        '201':
+          description: Registro de profesor exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Faltan campos en la solicitud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '409':
+          description: Profesor ya registrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+                  duplicate_field:
+                    type: string
+                    description: Campo que causa la violación de unicidad (username, worknum o email).
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/teacher-login:
+    post:
+      summary: Iniciar sesión de profesor
+      description: Permite a un profesor iniciar sesión proporcionando su número de trabajo y contraseña.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                worknum:
+                  type: string
+                  description: Número de trabajo del profesor.
+                password:
+                  type: string
+                  description: Contraseña del profesor.
+              required:
+                - worknum
+                - password
+      responses:
+        '200':
+          description: Inicio de sesión exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                      face_img:
+                        type: string
+                        format: base64
+                        description: Imagen de rostro en base64.
+                  status_code:
+                    type: integer
+        '400':
+          description: Solicitud incorrecta, campos faltantes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '402':
+          description: Profesor no encontrado
           content:
             application/json:
               schema:
@@ -262,6 +462,86 @@ paths:
                     type: string
                   status_code:
                     type: integer
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/check-duplicate:
+    post:
+      summary: Verificar duplicado de usuario
+      description: Verifica si un usuario ya existe en la base de datos basado en email, matnum o username.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Correo electrónico del usuario.
+                matnum:
+                  type: string
+                  description: Número de matrícula del usuario.
+                username:
+                  type: string
+                  description: Nombre de usuario.
+              required:
+                - email
+                - matnum
+                - username
+      responses:
+        '200':
+          description: No se encontraron duplicados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  status_code:
+                    type: integer
+        '400':
+          description: Solicitud incorrecta, campos faltantes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '409':
+          description: Usuario ya registrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+                  duplicate_field:
+                    type: string
+                    description: Campo que causa la violación de unicidad (username, matnum o email).
         '500':
           description: Error interno del servidor
           content:
