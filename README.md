@@ -1,21 +1,21 @@
-# FaceCheck UANL
+# FaceCheck UANL Backend
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![Flask](https://img.shields.io/badge/Flask-API-success)
 ![DeepFace](https://img.shields.io/badge/DeepFace-Facial_Recognition-orange)
 
-Proyecto desarrollado por Alphaware Team, apoyado por Accenture.
+Proyecto desarrollado por **Alphaware Team**, apoyado por **Accenture**.
 
-## Descripción
+## ℹ️ Descripción
 
 FaceCheck UANL está siendo desarrollado por el equipo de desarrollo Alphaware, parte del capítulo estudiantil CEATI, en colaboración con Accenture para capacitaciones. El propósito del proyecto es crear una aplicación móvil que permita registrar estudiantes, administrativos y profesores. Utilizando reconocimiento facial, la aplicación verifica la identidad de los estudiantes al ingresar a un aula para presentar evaluaciones, evitando fraudes de identidad.
 
-## 🚀 Tecnologías Utilizadas
+## 🚀 Tecnologías Utilizadas (Back-End)
 - **Python 3.12**
 - **Flask**
 - **DeepFace Framework**
 - **PostgreSQL**
 
-## Instalación
+## 📖 Instalación
 
 Para instalar y configurar el entorno de desarrollo, sigue estos pasos:
 
@@ -32,7 +32,7 @@ Para instalar y configurar el entorno de desarrollo, sigue estos pasos:
    pip install -r requirements.txt
    ```
 
-## Contribuir
+## 🧩 Contribuir
 
 Si deseas contribuir al proyecto, por favor sigue estos pasos:
 
