@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from routes.facecheck_route import facecheck_bp
 from routes.student_signup_route import student_signup_bp
 from routes.student_login_route import student_login_bp
@@ -10,6 +11,8 @@ import subprocess
 
 app = Flask(__name__)
 
+# Enable CORS for all routes
+CORS(app)
 
 # SWAGGER CONFIGURATION
 # Create a Swagger UI blueprint to serve API documentation
@@ -33,7 +36,6 @@ app.register_blueprint(check_duplicate_bp, url_prefix='/api')
 
 # Start a new command prompt and run the ngrok tunnel script
 # subprocess.Popen(['start', 'cmd', '/k', r'static\ngrok_tunnel.bat'], shell=True)
-
 
 if __name__ == '__main__':
     # Run the Flask application with debug mode and specified host and port

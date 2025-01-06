@@ -9,6 +9,9 @@ def check_duplicate():
     try:
         body = request.get_json()
 
+        # Print the request data to the console
+        print("Request data:", body)
+
         # Validate that the required fields are present
         required_fields = ['email', 'matnum', 'username']
         for field in required_fields:
