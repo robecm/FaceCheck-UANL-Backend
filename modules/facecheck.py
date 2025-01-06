@@ -42,6 +42,8 @@ class Base64:
         except Exception as e:
             raise ValueError(f"Invalid Base64 input: {str(e)}")
 
+    # TODO Make img uploadable into the database
+
     @staticmethod
     def resize_image(image, max_height=320):
         height, width = image.shape[:2]
