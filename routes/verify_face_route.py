@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from modules.facecheck import FaceCheck, Base64
 from modules.database import Database  # Import the Database class
 
-facecheck_bp = Blueprint('facecheck', __name__)
+verify_face_bp = Blueprint('verify_face', __name__)
 
 
 def decode_images(cap_frame_base64, ref_frame_base64):
@@ -11,7 +11,7 @@ def decode_images(cap_frame_base64, ref_frame_base64):
     return cap_frame, ref_frame
 
 
-@facecheck_bp.route('/verify-face', methods=['POST'])
+@verify_face_bp.route('/verify-face', methods=['POST'])
 def verify_face():
     try:
         body = request.get_json()
