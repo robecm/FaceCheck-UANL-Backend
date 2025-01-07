@@ -65,7 +65,7 @@ def student_login():
             print('Face image string:', face_img_base64_str[:100])
             return jsonify(Database.generate_response(
                 success=True,
-                data={'message': SUCCESSFUL_LOGIN_MSG, 'face_img': face_img_base64},
+                data={'message': SUCCESSFUL_LOGIN_MSG, 'face_img': face_img_base64_str},
                 status_code=200
             )), 200
         else:
