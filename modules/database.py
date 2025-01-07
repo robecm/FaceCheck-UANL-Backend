@@ -117,21 +117,26 @@ class Database:
                     RETURNING id;
                 """
                 cur.execute(query, kwargs)
+                print("Teacher inserted")  # Debugging print
+
                 teacher_id = cur.fetchone()[0]
                 print("Inserted teacher ID:", teacher_id)  # Debugging print
 
                 # Insert face image in separate table
                 if face_img:
+                    print("Inserting face image")  # Debugging print
                     face_query = """
-                        INSERT INTO teacher_faces (teacher_id, face_img) VALUES (%s, %s) RETURNING face_id;
+                        INSERT INTO faces_teachers (teacher_id, face_img) VALUES (%s, %s) RETURNING face_id;
                     """
                     cur.execute(face_query, (teacher_id, face_img))
+                    print("Face image inserted")
                     face_id = cur.fetchone()[0]
                     print("Inserted face ID:", face_id)  # Debugging print
 
                     update_query = """
                         UPDATE users_teachers SET face_id = %s WHERE id = %s;
                     """
+                    print("Updating teacher record")  # Debugging print
                     cur.execute(update_query, (face_id, teacher_id))
 
                 conn.commit()
@@ -198,17 +203,27 @@ class Database:
             try:
                 cur = conn.cursor()
                 query = """
-                       SELECT password, face_img FROM users_teachers WHERE worknum = %s
-                   """
+                    SELECT u.password, f.face_img
+                    FROM users_teachers u
+                    LEFT JOIN faces_teachers f ON u.id = f.teacher_id
+                    WHERE u.worknum = %s
+                """
                 cur.execute(query, (worknum,))
                 result = cur.fetchone()
                 cur.close()
 
                 if result:
                     print("User found:", result)  # Debugging print
+                    password = result[0]
+                    face_img_memoryview = result[1]
+                    print("Face image:", face_img_memoryview[:100])  # Debugging print
+                    face_img_base64 = base64.b64encode(face_img_memoryview).decode('utf-8')
+                    print("Face image base64:", face_img_base64[:100])  # Debugging print
+                    face_img_decoded = base64.b64decode(face_img_base64)
+                    print("Face image decoded:", face_img_decoded[:100])  # Debugging print
                     return self.generate_response(
                         success=True,
-                        data={'password': result[0], 'face_img': result[1]},
+                        data={'password': password, 'face_img': face_img_decoded},
                         status_code=200
                     )
                 else:

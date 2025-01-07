@@ -57,13 +57,15 @@ def teacher_login():
         # Compare the entered password with the one stored in the database
         hashed_password = user_registered_data['data']['password']
         face_img_base64 = user_registered_data['data']['face_img']
+        print("Stored password:", hashed_password)
 
         # Check if the entered password matches the stored password
         if bcrypt.checkpw(user_entered_data['password'].encode('utf-8'), hashed_password.encode('utf-8')):
+            face_img_base64_str = face_img_base64.decode('utf-8')
+            print('Face image string:', face_img_base64_str[:100])
             return jsonify(Database.generate_response(
                 success=True,
-                data={'face_img': face_img_base64},
-                message=SUCCESSFUL_LOGIN_MSG,
+                data={'message': SUCCESSFUL_LOGIN_MSG, 'face_img': face_img_base64_str},
                 status_code=200
             )), 200
         else:

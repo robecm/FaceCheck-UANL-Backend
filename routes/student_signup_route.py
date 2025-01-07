@@ -6,7 +6,9 @@ from modules.facecheck import ImageProcessor
 student_signup_bp = Blueprint('student_signup', __name__)
 db = Database()
 
+# Constants for error messages
 BAD_REQUEST_MSG = 'All fields must be present.'
+
 
 @student_signup_bp.route('/student-signup', methods=['POST'])
 def student_signup():
