@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from modules.facecheck import FaceCheck, Base64
+from modules.facecheck import FaceCheck, ImageProcessor
 
 check_face_bp = Blueprint('check_face', __name__)
 
@@ -17,7 +17,7 @@ def check_face():
                 'status_code': 400
             }), 400
 
-        img = Base64.decode_base64(img_base64)
+        img = ImageProcessor.decode_base64(img_base64)
 
         face_exists = FaceCheck().face_exists(img)
 

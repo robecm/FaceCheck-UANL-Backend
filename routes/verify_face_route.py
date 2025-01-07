@@ -1,13 +1,13 @@
 from flask import Blueprint, request, jsonify
-from modules.facecheck import FaceCheck, Base64
+from modules.facecheck import FaceCheck, ImageProcessor
 from modules.database import Database  # Import the Database class
 
 verify_face_bp = Blueprint('verify_face', __name__)
 
 
 def decode_images(cap_frame_base64, ref_frame_base64):
-    cap_frame = Base64.decode_base64(cap_frame_base64)
-    ref_frame = Base64.decode_base64(ref_frame_base64)
+    cap_frame = ImageProcessor.decode_base64(cap_frame_base64)
+    ref_frame = ImageProcessor.decode_base64(ref_frame_base64)
     return cap_frame, ref_frame
 
 

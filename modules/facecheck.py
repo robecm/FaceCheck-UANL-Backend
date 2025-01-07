@@ -1,8 +1,7 @@
 from deepface import DeepFace
 import numpy as np
-import base64
 import cv2
-import zlib
+import base64
 
 class FaceCheck:
     def __init__(self):
@@ -31,7 +30,7 @@ class FaceCheck:
             return True
         return False
 
-class Base64:
+class ImageProcessor:
     @staticmethod
     def decode_base64(image_base64):
         try:
@@ -42,8 +41,6 @@ class Base64:
         except Exception as e:
             raise ValueError(f"Invalid Base64 input: {str(e)}")
 
-    # TODO Make img uploadable into the database
-
     @staticmethod
     def resize_image(image, max_height=320):
         height, width = image.shape[:2]
@@ -53,14 +50,7 @@ class Base64:
         return image
 
     @staticmethod
-    def encode_base64(image):
-        resized_image = Base64.resize_image(image)
-        _, buffer = cv2.imencode('.jpg', resized_image, [int(cv2.IMWRITE_JPEG_QUALITY), 25])  # Reduce quality to 25
-        image_base64 = base64.b64encode(buffer).decode('utf-8')
-        compressed_base64 = zlib.compress(image_base64.encode('utf-8'))
-        return compressed_base64
-
-    @staticmethod
-    def decompress_base64(compressed_base64):
-        decompressed_data = zlib.decompress(compressed_base64)
-        return decompressed_data.decode('utf-8')
+    def encode_binary(image):
+        resized_image = ImageProcessor.resize_image(image)
+        _, buffer = cv2.imencode('.jpg', resized_image, [int(cv2.IMWRITE_JPEG_QUALITY), 90])  # Calidad ajustada a 90
+        return buffer.tobytes()
