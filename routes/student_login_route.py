@@ -52,7 +52,7 @@ def student_login():
             )), 402
 
         # Log para verificar los datos del usuario recuperado
-        print("Datos del usuario recuperado:", user_registered_data)
+        print("Datos del usuario recuperado:", {**user_registered_data, 'data': {**user_registered_data['data'], 'face_img': user_registered_data['data']['face_img'][:100]}})
 
         # Comparar la contraseña introducida con la almacenada en la base de datos
         hashed_password = user_registered_data['data']['password']
