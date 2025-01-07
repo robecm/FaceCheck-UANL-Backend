@@ -40,33 +40,6 @@ def student_signup():
                 status_code=result['status_code']
             )), result['status_code']
 
-        student_id = result.get('student_id')  # ID del estudiante recién registrado  # ID del estudiante recién registrado
-        print("Student ID:", student_id)  # Debugging print
-
-        # Procesar y almacenar la imagen en student_faces
-        try:
-            image_file = request.files['face_img']
-            img_binary = image_file.read()
-            img = ImageProcessor.decode_binary(img_binary)
-            img_encoded = ImageProcessor.encode_binary(img)
-            print("Processed face image")  # Debugging print
-
-            # Guardar imagen en tabla de caras y obtener face_id
-            face_result = db.insert_face_image(student_id, img_encoded)
-            print("Face image insert result:", face_result)  # Debugging print
-            if face_result['success']:
-                face_id = face_result['data']['face_id']
-                print("Face ID:", face_id)  # Debugging print
-
-            # TODO Check if you can print the face_id and student_id
-
-                # Actualizar estudiante con el face_id
-                db.update_student_face_id(student_id, face_id)
-            else:
-                print("Error inserting face image.")  # Debugging print
-        except Exception as e:
-            print("Invalid image data:", str(e))  # Debugging print
-
         return jsonify(Database.generate_response(
             success=True,
             data={'message': 'User registered successfully'},

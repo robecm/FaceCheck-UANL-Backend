@@ -5,3 +5,4 @@
 /static/ngrok_tunnel.bat
 /.venv/
 /.idea/
+/static/.ngrok.exe.old

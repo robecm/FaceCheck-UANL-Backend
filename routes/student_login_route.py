@@ -57,9 +57,12 @@ def student_login():
         # Comparar la contraseña introducida con la almacenada en la base de datos
         hashed_password = user_registered_data['data']['password']
         face_img_base64 = user_registered_data['data']['face_img']
+        print("Contraseña almacenada:", hashed_password)
 
         # Verificar si la contraseña ingresada coincide
         if bcrypt.checkpw(user_entered_data['password'].encode('utf-8'), hashed_password.encode('utf-8')):
+            face_img_base64_str = face_img_base64.decode('utf-8')
+            print('Face image string:', face_img_base64_str[:100])
             return jsonify(Database.generate_response(
                 success=True,
                 data={'message': SUCCESSFUL_LOGIN_MSG, 'face_img': face_img_base64},
