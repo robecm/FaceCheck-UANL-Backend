@@ -19,6 +19,10 @@ def verify_face():
         cap_frame_base64 = body.get('cap_frame')
         ref_frame_base64 = body.get('ref_frame')
 
+        # Debugging prints for the first 100 characters of the base64 strings
+        print("cap_frame_base64 (first 100 chars):", cap_frame_base64[:100])
+        print("ref_frame_base64 (first 100 chars):", ref_frame_base64[:100])
+
         if not (cap_frame_base64 and ref_frame_base64):
             return jsonify(Database.generate_response(
                 success=False,
@@ -29,6 +33,9 @@ def verify_face():
         cap_frame, ref_frame = decode_images(cap_frame_base64, ref_frame_base64)
 
         face_match = FaceCheck().check_match(cap_frame, ref_frame)
+
+        # Debugging print for the result of the face comparison
+        print("Face comparison result:", face_match)
 
         return jsonify(Database.generate_response(
             success=True,
