@@ -555,3 +555,64 @@ paths:
                     type: string
                   status_code:
                     type: integer
+
+  /api/check-face:
+    post:
+      summary: Verificar existencia de rostro
+      description: Verifica si existe un rostro en la imagen proporcionada en formato base64.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                img:
+                  type: string
+                  format: base64
+                  description: Imagen en formato base64.
+              required:
+                - img
+      responses:
+        '200':
+          description: Verificación de rostro exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      face_exists:
+                        type: boolean
+                  status_code:
+                    type: integer
+        '400':
+          description: Solicitud incorrecta, falta la imagen o hay un error en los datos proporcionados.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer

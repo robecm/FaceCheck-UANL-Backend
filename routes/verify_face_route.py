@@ -1,23 +1,27 @@
 from flask import Blueprint, request, jsonify
-from modules.facecheck import FaceCheck, Base64
+from modules.facecheck import FaceCheck, ImageProcessor
 from modules.database import Database  # Import the Database class
 
-facecheck_bp = Blueprint('facecheck', __name__)
+verify_face_bp = Blueprint('verify_face', __name__)
 
 
 def decode_images(cap_frame_base64, ref_frame_base64):
-    cap_frame = Base64.decode_base64(cap_frame_base64)
-    ref_frame = Base64.decode_base64(ref_frame_base64)
+    cap_frame = ImageProcessor.decode_base64(cap_frame_base64)
+    ref_frame = ImageProcessor.decode_base64(ref_frame_base64)
     return cap_frame, ref_frame
 
 
-@facecheck_bp.route('/verify-face', methods=['POST'])
+@verify_face_bp.route('/verify-face', methods=['POST'])
 def verify_face():
     try:
         body = request.get_json()
 
         cap_frame_base64 = body.get('cap_frame')
         ref_frame_base64 = body.get('ref_frame')
+
+        # Debugging prints for the first 100 characters of the base64 strings
+        print("cap_frame_base64 (first 100 chars):", cap_frame_base64[:100])
+        print("ref_frame_base64 (first 100 chars):", ref_frame_base64[:100])
 
         if not (cap_frame_base64 and ref_frame_base64):
             return jsonify(Database.generate_response(
@@ -29,6 +33,9 @@ def verify_face():
         cap_frame, ref_frame = decode_images(cap_frame_base64, ref_frame_base64)
 
         face_match = FaceCheck().check_match(cap_frame, ref_frame)
+
+        # Debugging print for the result of the face comparison
+        print("Face comparison result:", face_match)
 
         return jsonify(Database.generate_response(
             success=True,
