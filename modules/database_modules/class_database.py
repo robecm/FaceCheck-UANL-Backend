@@ -3,6 +3,7 @@ import psycopg2.extras
 import json
 from contextlib import contextmanager
 
+
 # Function to load database credentials from a JSON file
 def load_credentials(path):
     with open(path, 'r') as file:
@@ -88,6 +89,48 @@ class ClassesDatabase:
             except psycopg2.Error as e:
                 error_message = e.pgerror if e.pgerror else str(e)
                 print(f"Error retrieving classes: {error_message}")
+
+    def update_class(self, class_id, **kwargs):
+        class_fields = ["class_name", "teacher_id", "group_num", "semester"]
+        optional_fields = ["class_room", "start_time", "end_time", "week_days"]
+
+        if not class_id:
+            return self.generate_response(success=False, error='Class ID must be provided.', status_code=400)
+
+        # Filter out optional fields that are not provided
+        filtered_kwargs = {field: kwargs[field] for field in class_fields + optional_fields if field in kwargs}
+
+        if not filtered_kwargs:
+            return self.generate_response(success=False, error='No fields to update.', status_code=400)
+        print('Received data:', filtered_kwargs)  # Debugging print
+
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor()
+
+                # Construct the query dynamically
+                set_clause = ', '.join([f'{field} = %({field})s' for field in filtered_kwargs.keys()])
+                query = f"""
+                    UPDATE classes
+                    SET {set_clause}
+                    WHERE class_id = %(class_id)s
+                    RETURNING class_id;
+                """
+                filtered_kwargs['class_id'] = class_id
+                cur.execute(query, filtered_kwargs)
+                print("Class updated successfully.")  # Debugging print
+
+                updated_class_id = cur.fetchone()[0]
+                print("Updated class ID:", updated_class_id)  # Debugging print
+                conn.commit()
+                cur.close()
+                return self.generate_response(success=True, error=None, status_code=200, data={'class_id': updated_class_id})
+
+            except psycopg2.Error as e:
+                conn.rollback()
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f"Error updating class: {error_message}")
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
     # Private method to generate a consistent JSON response
     @staticmethod
