@@ -218,6 +218,43 @@ class ClassesDatabase:
                 print(f"Error retrieving class students: {error_message}")
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
+    def del_student_from_class(self, student_id, class_id):
+        if not student_id or not class_id:
+            return self.generate_response(success=False, error='Both student ID and class ID must be provided.', status_code=400)
+
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor()
+
+                # Check if the student is registered in the class
+                check_query = """
+                    SELECT 1 FROM classes_students
+                    WHERE student_id = %s AND class_id = %s;
+                """
+                cur.execute(check_query, (student_id, class_id))
+                if not cur.fetchone():
+                    return self.generate_response(success=False, error='Student is not registered in the class.', status_code=404)
+
+                # Proceed to delete the student from the class
+                delete_query = """
+                    DELETE FROM classes_students
+                    WHERE student_id = %s AND class_id = %s
+                    RETURNING student_id, class_id;
+                """
+                cur.execute(delete_query, (student_id, class_id))
+                result = cur.fetchone()
+                deleted_student = result[0]
+                deleted_class = result[1]
+                conn.commit()
+                cur.close()
+
+                return self.generate_response(success=True, error=None, status_code=200, data={'student_id': deleted_student, 'class_id': deleted_class})
+
+            except psycopg2.Error as e:
+                conn.rollback()
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f"Error deleting student from class: {error_message}")
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
 
     # Private method to generate a consistent JSON response

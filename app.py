@@ -13,6 +13,7 @@ from routes.class_routes.update_class_route import update_class_bp
 from routes.class_routes.delete_class_route import delete_class_bp
 from routes.class_routes.student_class_route import student_class_bp
 from routes.class_routes.retrieve_class_students_route import retrieve_class_students_bp
+from routes.class_routes.delete_student_class import delete_student_class_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 import subprocess
 
@@ -54,6 +55,9 @@ app.register_blueprint(delete_class_bp, url_prefix='/api')
 app.register_blueprint(student_class_bp, url_prefix='/api')
 # Register the retrieve class students blueprint
 app.register_blueprint(retrieve_class_students_bp, url_prefix='/api')
+# Register the delete student class blueprint
+app.register_blueprint(delete_student_class_bp, url_prefix='/api')
+
 
 # Start a new command prompt and run the ngrok tunnel script
 # subprocess.Popen(['start', 'cmd', '/k', r'static\ngrok_tunnel.bat'], shell=True)
