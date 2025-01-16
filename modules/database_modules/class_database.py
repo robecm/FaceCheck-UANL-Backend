@@ -73,6 +73,9 @@ class ClassesDatabase:
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
     def retrieve_classes(self, teacher_id):
+        if not teacher_id:
+            return self.generate_response(success=False, error='Teacher ID must be provided.', status_code=400)
+
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -89,6 +92,7 @@ class ClassesDatabase:
             except psycopg2.Error as e:
                 error_message = e.pgerror if e.pgerror else str(e)
                 print(f"Error retrieving classes: {error_message}")
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
     def update_class(self, class_id, **kwargs):
         class_fields = ["class_name", "teacher_id", "group_num", "semester"]
@@ -155,6 +159,66 @@ class ClassesDatabase:
                 error_message = e.pgerror if e.pgerror else str(e)
                 print(f"Error deleting class: {error_message}")
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
+
+    def add_student_to_class(self, student_id, class_id):
+        if not student_id or not class_id:
+            return self.generate_response(success=False, error='Both student ID and class ID must be provided.', status_code=400)
+
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor()
+
+                # Check if the student is already registered in the class
+                query = """
+                    SELECT * FROM classes_students
+                    WHERE student_id = %s AND class_id = %s;
+                """
+                cur.execute(query, (student_id, class_id))
+                existing_student = cur.fetchone()
+                if existing_student:
+                    return self.generate_response(success=False, error='Student is already registered in the class.', status_code=400)
+
+                query = """
+                    INSERT INTO classes_students (student_id, class_id)
+                    VALUES (%s, %s)
+                    RETURNING student_id, class_id;
+                """
+                cur.execute(query, (student_id, class_id))
+                conn.commit()
+                cur.close()
+                return self.generate_response(success=True, error=None, status_code=201)
+
+            except psycopg2.Error as e:
+                conn.rollback()
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f"Error adding student to class: {error_message}")
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
+
+    def retrieve_class_students(self, class_id):
+        if not class_id:
+            return self.generate_response(success=False, error='Class ID must be provided.', status_code=400)
+
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                query = """
+                    SELECT users_students.id, name, username, email, faculty, matnum
+                    FROM users_students
+                    JOIN classes_students ON users_students.id = classes_students.student_id
+                    WHERE class_id = %s;
+                """
+                cur.execute(query, (class_id,))
+                students = cur.fetchall()
+                cur.close()
+                students_dict = [dict(row) for row in students]
+                return self.generate_response(success=True, error=None, status_code=200, data=students_dict)
+
+            except psycopg2.Error as e:
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f"Error retrieving class students: {error_message}")
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
+
+
 
     # Private method to generate a consistent JSON response
     @staticmethod
