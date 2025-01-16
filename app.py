@@ -1,12 +1,12 @@
 from flask import Flask
 from flask_cors import CORS
-from routes.verify_face_route import verify_face_bp
-from routes.student_signup_route import student_signup_bp
-from routes.student_login_route import student_login_bp
-from routes.teacher_login_route import teacher_login_bp
-from routes.teacher_signup_route import teacher_signup_bp
-from routes.check_duplicate_route import check_duplicate_bp
-from routes.check_face_route import check_face_bp
+from routes.face_routes.verify_face_route import verify_face_bp
+from routes.login_routes.student_signup_route import student_signup_bp
+from routes.login_routes.student_login_route import student_login_bp
+from routes.login_routes.teacher_login_route import teacher_login_bp
+from routes.login_routes.teacher_signup_route import teacher_signup_bp
+from routes.face_routes.check_duplicate_route import check_duplicate_bp
+from routes.face_routes.check_face_route import check_face_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 import subprocess
 
