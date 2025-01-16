@@ -2,23 +2,23 @@ from flask import Blueprint, request, jsonify
 from modules.database_modules.class_database import ClassesDatabase
 
 
-retrieve_classes_bp = Blueprint('retrieve_classes', __name__)
+delete_class_bp = Blueprint('delete_class_route', __name__)
 db = ClassesDatabase()
 
 
-@retrieve_classes_bp.route('/retrieve-classes', methods=['GET'])
-def retrieve_classes():
+@delete_class_bp.route('/delete-class', methods=['DELETE'])
+def delete_class():
     try:
-        teacher_id = request.args.get('teacher_id')
-        print("Received teacher ID:", teacher_id)  # Debugging print
-        if not teacher_id:
+        class_id = request.args.get('class_id')
+        print('Received class ID:', class_id)  # Debugging print
+        if not class_id:
             return jsonify(ClassesDatabase.generate_response(
                 success=False,
-                error='Missing teacher_id parameter',
+                error='Missing class_id parameter',
                 status_code=400
             )), 400
 
-        result = db.retrieve_classes(teacher_id)
+        result = db.delete_class(class_id)
         if not result['success']:
             return jsonify(ClassesDatabase.generate_response(
                 success=False,
