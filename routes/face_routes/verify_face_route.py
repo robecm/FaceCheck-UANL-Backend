@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from modules.facecheck import FaceCheck, ImageProcessor
-from modules.database import Database  # Import the Database class
+from modules.database_modules.login_signup_database import LoginSignupDatabase  # Import the Database class
 
 verify_face_bp = Blueprint('verify_face', __name__)
 
@@ -24,7 +24,7 @@ def verify_face():
         print("ref_frame_base64 (first 100 chars):", ref_frame_base64[:100])
 
         if not (cap_frame_base64 and ref_frame_base64):
-            return jsonify(Database.generate_response(
+            return jsonify(LoginSignupDatabase.generate_response(
                 success=False,
                 error='Both images must be present.',
                 status_code=400
@@ -37,20 +37,20 @@ def verify_face():
         # Debugging print for the result of the face comparison
         print("Face comparison result:", face_match)
 
-        return jsonify(Database.generate_response(
+        return jsonify(LoginSignupDatabase.generate_response(
             success=True,
             data={'match': face_match},
             status_code=200
         )), 200
 
     except ValueError as ve:
-        return jsonify(Database.generate_response(
+        return jsonify(LoginSignupDatabase.generate_response(
             success=False,
             error=str(ve),
             status_code=400
         )), 400
     except Exception as e:
-        return jsonify(Database.generate_response(
+        return jsonify(LoginSignupDatabase.generate_response(
             success=False,
             error=str(e),
             status_code=500

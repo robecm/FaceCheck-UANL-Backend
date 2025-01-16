@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
-from modules.database import Database
+from modules.database_modules.login_signup_database import LoginSignupDatabase
 import bcrypt
 
 teacher_login_bp = Blueprint('teacher_login', __name__)
-db = Database()
+db = LoginSignupDatabase()
 
 # Constants for messages
 BAD_REQUEST_MSG = 'All fields must be present.'
@@ -20,7 +20,7 @@ def teacher_login():
 
         # Validate that the JSON is not None or empty
         if not body:
-            return jsonify(Database.generate_response(
+            return jsonify(LoginSignupDatabase.generate_response(
                 success=False,
                 error='No JSON data provided',
                 status_code=400
@@ -34,7 +34,7 @@ def teacher_login():
 
         # Validate that both fields are not empty
         if not user_entered_data['worknum'] or not user_entered_data['password']:
-            return jsonify(Database.generate_response(
+            return jsonify(LoginSignupDatabase.generate_response(
                 success=False,
                 error=BAD_REQUEST_MSG,
                 status_code=401
@@ -45,7 +45,7 @@ def teacher_login():
 
         # Check if the user was found
         if not user_registered_data:
-            return jsonify(Database.generate_response(
+            return jsonify(LoginSignupDatabase.generate_response(
                 success=False,
                 error=USER_NOT_FOUND_MSG,
                 status_code=402
@@ -63,13 +63,13 @@ def teacher_login():
         if bcrypt.checkpw(user_entered_data['password'].encode('utf-8'), hashed_password.encode('utf-8')):
             face_img_base64_str = face_img_base64.decode('utf-8')
             print('Face image string:', face_img_base64_str[:100])
-            return jsonify(Database.generate_response(
+            return jsonify(LoginSignupDatabase.generate_response(
                 success=True,
                 data={'message': SUCCESSFUL_LOGIN_MSG, 'face_img': face_img_base64_str},
                 status_code=200
             )), 200
         else:
-            return jsonify(Database.generate_response(
+            return jsonify(LoginSignupDatabase.generate_response(
                 success=False,
                 error=INCORRECT_PASSWORD_MSG,
                 status_code=403
@@ -78,7 +78,7 @@ def teacher_login():
     except Exception as e:
         # Log the error
         print(f'Exception: {e}')
-        return jsonify(Database.generate_response(
+        return jsonify(LoginSignupDatabase.generate_response(
             success=False,
             error=str(e),
             status_code=500

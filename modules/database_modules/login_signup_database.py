@@ -29,7 +29,7 @@ def db_connection(credentials):
             conn.close()
 
 # Database class to handle user operations
-class Database:
+class LoginSignupDatabase:
     def __init__(self, credentials_path='modules/credentials.json'):
         self.credentials = load_credentials(credentials_path)
 

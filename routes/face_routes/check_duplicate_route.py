@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
-from modules.database import Database
+from modules.database_modules.login_signup_database import LoginSignupDatabase
 
 check_duplicate_bp = Blueprint('check_duplicate', __name__)
-db = Database()
+db = LoginSignupDatabase()
 
 @check_duplicate_bp.route('/check-duplicate', methods=['POST'])
 def check_duplicate():
@@ -16,7 +16,7 @@ def check_duplicate():
         required_fields = ['email', 'matnum', 'username']
         for field in required_fields:
             if field not in body or not body[field]:
-                return jsonify(Database.generate_response(
+                return jsonify(LoginSignupDatabase.generate_response(
                     success=False,
                     error=f'Missing field: {field}',
                     status_code=400
@@ -34,7 +34,7 @@ def check_duplicate():
         return jsonify(result), result['status_code']
 
     except Exception as e:
-        return jsonify(Database.generate_response(
+        return jsonify(LoginSignupDatabase.generate_response(
             success=False,
             error=str(e),
             status_code=500
