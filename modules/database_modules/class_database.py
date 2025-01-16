@@ -1,4 +1,5 @@
 import psycopg2
+import psycopg2.extras
 import json
 from contextlib import contextmanager
 
@@ -69,6 +70,24 @@ class ClassesDatabase:
                 error_message = e.pgerror if e.pgerror else str(e)
                 print(f"Error registering class: {error_message}") # Debugging print
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
+
+    def retrieve_classes(self, teacher_id):
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                query = """
+                    SELECT * FROM classes
+                    WHERE teacher_id = %s;
+                """
+                cur.execute(query, (teacher_id,))
+                classes = cur.fetchall()
+                cur.close()
+                classes_dict = [dict(row) for row in classes]
+                return self.generate_response(success=True, error=None, status_code=200, data=classes_dict)
+
+            except psycopg2.Error as e:
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f"Error retrieving classes: {error_message}")
 
     # Private method to generate a consistent JSON response
     @staticmethod
