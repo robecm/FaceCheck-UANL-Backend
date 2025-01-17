@@ -31,7 +31,7 @@ def db_connection(credentials):
 
 # Database class to handle school classes data
 class ClassesDatabase:
-    def __init__(self, credentials_path='modules/credentials.json'):
+    def __init__(self, credentials_path='modules/database_modules/credentials.json'):
         self.credentials = load_credentials(credentials_path)
 
     def register_class(self, **kwargs):
@@ -42,7 +42,6 @@ class ClassesDatabase:
 
         # Filter out optional fields that are not provided
         filtered_kwargs = {field: kwargs[field] for field in class_fields + optional_fields if field in kwargs}
-
         print("Received class data:", filtered_kwargs)  # Debugging print
 
         with db_connection(self.credentials) as conn:
@@ -57,7 +56,7 @@ class ClassesDatabase:
                     VALUES ({values})
                     RETURNING class_id;
                 """
-                cur.execute(query, kwargs)
+                cur.execute(query, filtered_kwargs)
                 print("Class registered successfully.") # Debugging print
 
                 class_id = cur.fetchone()[0]

@@ -30,7 +30,7 @@ def db_connection(credentials):
 
 # Database class to handle user operations
 class LoginSignupDatabase:
-    def __init__(self, credentials_path='modules/credentials.json'):
+    def __init__(self, credentials_path='modules/database_modules/credentials.json'):
         self.credentials = load_credentials(credentials_path)
 
     # Method to sign up a new student (split image storage)
