@@ -2,6 +2,7 @@ import psycopg2
 import psycopg2.extras
 import json
 from contextlib import contextmanager
+from datetime import time
 
 
 # Function to load database credentials from a JSON file
@@ -253,6 +254,39 @@ class ClassesDatabase:
                 conn.rollback()
                 error_message = e.pgerror if e.pgerror else str(e)
                 print(f"Error deleting student from class: {error_message}")
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
+
+    def retrieve_class_exams(self, class_id):
+        if not class_id:
+            return self.generate_response(success=False, error='Class ID must be provided.', status_code=400)
+
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                query = """
+                    SELECT * FROM exams
+                    WHERE class_id = %s;
+                """
+                cur.execute(query, (class_id,))
+                exams = cur.fetchall()
+                cur.close()
+
+                if not exams:
+                    return self.generate_response(success=False, error='No exams found for the class.', status_code=404)
+
+                exams_dict = [dict(row) for row in exams]
+
+                # Convert time objects to strings
+                for exam in exams_dict:
+                    for key, value in exam.items():
+                        if isinstance(value, time):
+                            exam[key] = value.strftime('%H:%M:%S')
+
+                return self.generate_response(success=True, error=None, status_code=200, data=exams_dict)
+
+            except psycopg2.Error as e:
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f"Error retrieving class exams: {error_message}")
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
 
