@@ -159,6 +159,72 @@ class ExamsDatabase:
                 print(f'Error deleting exam: {error_message}')
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
+    def add_exam_result(self, exam_id, class_id, student_id, score):
+        if not all([exam_id, class_id, student_id, score]):
+            return self.generate_response(success=False, error='All required fields must be provided', status_code=400)
+
+        with db_connection(self.credentials) as conn:
+
+            try:
+                cur = conn.cursor()
+
+                # Check if the class has the exam and the student
+                check_query = """
+                    SELECT * FROM exams
+                    WHERE exam_id = %s AND class_id = %s;
+                """
+                cur.execute(check_query, (exam_id, class_id))
+                existing_exam = cur.fetchone()
+                if not existing_exam:
+                    return self.generate_response(success=False, error='Exam not found in the class', status_code=404)
+
+                check_query = """
+                    SELECT * FROM classes_students
+                    WHERE student_id = %s AND class_id = %s;
+                """
+                cur.execute(check_query, (student_id, class_id))
+                existing_student = cur.fetchone()
+                if not existing_student:
+                    return self.generate_response(success=False, error='Student not found in the class', status_code=404)
+
+                # Check if the student has already taken the exam
+                check_query = """
+                    SELECT * FROM exam_results
+                    WHERE exam_id = %s AND student_id = %s;
+                """
+                cur.execute(check_query, (exam_id, student_id))
+                existing_score = cur.fetchone()
+                if existing_score:
+                    return self.generate_response(success=False, error='Student has already taken the exam', status_code=400)
+
+                # Insert the score into the database
+                query = """
+                    INSERT INTO exam_results (exam_id, class_id, student_id, score)
+                    VALUES (%s, %s, %s, %s)
+                    RETURNING result_id;
+                """
+                cur.execute(query, (exam_id, class_id, student_id, score))
+                print('Score added successfully')  # Debugging print
+
+                result_id = cur.fetchone()[0]
+                print('Generated result ID:', result_id)  # Debugging print
+                conn.commit()
+                cur.close()
+                return self.generate_response(success=True, error=None, status_code=201)
+
+            except psycopg2.DatabaseError as e:
+                conn.rollback()
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f'Error adding score: {error_message}') # Debugging print
+                return self.generate_response(success=False, error=error_message, status_code=500)
+
+
+    # TODO modify_exam_result() function
+    # TODO delete_exam_result() function
+    # TODO retrieve_exam_results() function
+
+
+
 
     # Private method to generate a consistent JSON response
     @staticmethod
