@@ -135,6 +135,31 @@ class ExamsDatabase:
                 print(f'Error updating exam: {error_message}')
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
+    def delete_exam(self, exam_id):
+        if not exam_id:
+            return self.generate_response(success=False, error='Exam ID must be provided', status_code=400)
+
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor()
+                query = """
+                    DELETE FROM exams
+                    WHERE exam_id = %s
+                    RETURNING exam_id;
+                """
+                cur.execute(query, (exam_id,))
+                deleted_exam_id = cur.fetchone()[0]
+                conn.commit()
+                cur.close()
+                return self.generate_response(success=True, error=None, status_code=200, data={'exam_id': deleted_exam_id})
+
+            except psycopg2.Error as e:
+                conn.rollback()
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f'Error deleting exam: {error_message}')
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
+
+
     # Private method to generate a consistent JSON response
     @staticmethod
     def generate_response(success, error=None, status_code=200, **kwargs):

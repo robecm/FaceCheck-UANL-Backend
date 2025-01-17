@@ -16,6 +16,7 @@ from routes.class_routes.retrieve_class_students_route import retrieve_class_stu
 from routes.class_routes.delete_student_class import delete_student_class_bp
 from routes.exam_routes.create_exam_route import create_exam_bp
 from routes.exam_routes.update_exam_route import update_exam_bp
+from routes.exam_routes.delete_exam_route import delete_exam_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 import subprocess
 
@@ -63,6 +64,8 @@ app.register_blueprint(delete_student_class_bp, url_prefix='/api')
 app.register_blueprint(create_exam_bp, url_prefix='/api')
 # Register update exam blueprint
 app.register_blueprint(update_exam_bp, url_prefix='/api')
+# Register delete exam blueprint
+app.register_blueprint(delete_exam_bp, url_prefix='/api')
 
 
 # Start a new command prompt and run the ngrok tunnel script
