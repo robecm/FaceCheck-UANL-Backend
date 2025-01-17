@@ -7,6 +7,17 @@ from routes.login_routes.teacher_login_route import teacher_login_bp
 from routes.login_routes.teacher_signup_route import teacher_signup_bp
 from routes.face_routes.check_duplicate_route import check_duplicate_bp
 from routes.face_routes.check_face_route import check_face_bp
+from routes.class_routes.register_class_route import register_class_bp
+from routes.class_routes.retrieve_classes_route import retrieve_classes_bp
+from routes.class_routes.update_class_route import update_class_bp
+from routes.class_routes.delete_class_route import delete_class_bp
+from routes.class_routes.student_class_route import student_class_bp
+from routes.class_routes.retrieve_class_students_route import retrieve_class_students_bp
+from routes.class_routes.delete_student_class import delete_student_class_bp
+from routes.exam_routes.create_exam_route import create_exam_bp
+from routes.exam_routes.update_exam_route import update_exam_bp
+from routes.exam_routes.delete_exam_route import delete_exam_bp
+from routes.class_routes.retrieve_class_exams_route import retrieve_class_exams_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 import subprocess
 
@@ -36,6 +47,29 @@ app.register_blueprint(teacher_login_bp, url_prefix='/api')
 app.register_blueprint(check_duplicate_bp, url_prefix='/api')
 # Register the check face blueprint
 app.register_blueprint(check_face_bp, url_prefix='/api')
+# Register the register class blueprint
+app.register_blueprint(register_class_bp, url_prefix='/api')
+# Register the retrieve classes blueprint
+app.register_blueprint(retrieve_classes_bp, url_prefix='/api')
+# Register the update class blueprint
+app.register_blueprint(update_class_bp, url_prefix='/api')
+# Register the delete class blueprint
+app.register_blueprint(delete_class_bp, url_prefix='/api')
+# Register the student class blueprint
+app.register_blueprint(student_class_bp, url_prefix='/api')
+# Register the retrieve class students blueprint
+app.register_blueprint(retrieve_class_students_bp, url_prefix='/api')
+# Register the delete student class blueprint
+app.register_blueprint(delete_student_class_bp, url_prefix='/api')
+# Register create exam blueprint
+app.register_blueprint(create_exam_bp, url_prefix='/api')
+# Register update exam blueprint
+app.register_blueprint(update_exam_bp, url_prefix='/api')
+# Register delete exam blueprint
+app.register_blueprint(delete_exam_bp, url_prefix='/api')
+# Register retrieve class exams blueprint
+app.register_blueprint(retrieve_class_exams_bp, url_prefix='/api')
+
 
 # Start a new command prompt and run the ngrok tunnel script
 # subprocess.Popen(['start', 'cmd', '/k', r'static\ngrok_tunnel.bat'], shell=True)

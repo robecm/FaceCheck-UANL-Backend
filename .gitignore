@@ -1,4 +1,4 @@
-/modules/credentials.JSON
+/modules/database_modules/credentials.JSON
 /static/ngrok.exe
 /request_test.py
 /faces.json
@@ -6,3 +6,4 @@
 /.venv/
 /.idea/
 /static/.ngrok.exe.old
+/modules/database_modules/credentials.JSON
