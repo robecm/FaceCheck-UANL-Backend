@@ -616,3 +616,995 @@ paths:
                     type: string
                   status_code:
                     type: integer
+
+  /api/delete-class:
+    delete:
+      summary: Delete a class
+      description: Deletes a class based on the provided class_id.
+      parameters:
+        - in: query
+          name: class_id
+          required: true
+          schema:
+            type: string
+          description: ID of the class to delete.
+      responses:
+        '200':
+          description: Class deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing class_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/student-class:
+    post:
+      summary: Add a student to a class
+      description: Registers a student into a class based on student_id and class_id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                student_id:
+                  type: integer
+                  description: ID of the student.
+                class_id:
+                  type: integer
+                  description: ID of the class.
+              required:
+                - student_id
+                - class_id
+      responses:
+        '201':
+          description: Student added to class successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/delete-student-class:
+    delete:
+      summary: Delete a student from a class
+      description: Deletes a student from a class based on student_id and class_id.
+      parameters:
+        - in: query
+          name: class_id
+          required: true
+          schema:
+            type: string
+          description: ID of the class.
+        - in: query
+          name: student_id
+          required: true
+          schema:
+            type: string
+          description: ID of the student.
+      responses:
+        '200':
+          description: Student deleted from class successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing class_id or student_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/register-class:
+    post:
+      summary: Register a new class
+      description: Registers a new class with the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                class_name:
+                  type: string
+                  description: Name of the class.
+                teacher_id:
+                  type: integer
+                  description: ID of the teacher.
+                group_num:
+                  type: integer
+                  description: Group number.
+                semester:
+                  type: string
+                  description: Semester.
+                class_room:
+                  type: string
+                  description: Class room.
+                start_time:
+                  type: string
+                  description: Start time.
+                end_time:
+                  type: string
+                  description: End time.
+                week_days:
+                  type: string
+                  description: Week days.
+              required:
+                - class_name
+                - teacher_id
+                - group_num
+                - semester
+      responses:
+        '201':
+          description: Class registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/retrieve-class-exams:
+    get:
+      summary: Retrieve exams for a class
+      description: Retrieves all exams for a class based on class_id.
+      parameters:
+        - in: query
+          name: class_id
+          required: true
+          schema:
+            type: string
+          description: ID of the class.
+      responses:
+        '200':
+          description: Exams retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing class_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/retrieve-class-students:
+    get:
+      summary: Retrieve students for a class
+      description: Retrieves all students for a class based on class_id.
+      parameters:
+        - in: query
+          name: class_id
+          required: true
+          schema:
+            type: string
+          description: ID of the class.
+      responses:
+        '200':
+          description: Students retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing class_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/retrieve-student-classes:
+    get:
+      summary: Retrieve classes for a student
+      description: Retrieves all classes for a student based on student_id.
+      parameters:
+        - in: query
+          name: student_id
+          required: true
+          schema:
+            type: string
+          description: ID of the student.
+      responses:
+        '200':
+          description: Classes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing student_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/retrieve-teacher-classes:
+    get:
+      summary: Retrieve classes for a teacher
+      description: Retrieves all classes for a teacher based on teacher_id.
+      parameters:
+        - in: query
+          name: teacher_id
+          required: true
+          schema:
+            type: string
+          description: ID of the teacher.
+      responses:
+        '200':
+          description: Classes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing teacher_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/update-class:
+    put:
+      summary: Update a class
+      description: Updates a class with the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                class_id:
+                  type: integer
+                  description: ID of the class.
+                class_name:
+                  type: string
+                  description: Name of the class.
+                teacher_id:
+                  type: integer
+                  description: ID of the teacher.
+                group_num:
+                  type: integer
+                  description: Group number.
+                semester:
+                  type: string
+                  description: Semester.
+                class_room:
+                  type: string
+                  description: Class room.
+                start_time:
+                  type: string
+                  description: Start time.
+                end_time:
+                  type: string
+                  description: End time.
+                week_days:
+                  type: string
+                  description: Week days.
+              required:
+                - class_id
+      responses:
+        '200':
+          description: Class updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/create-exam:
+    post:
+      summary: Create a new exam
+      description: Creates a new exam with the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exam_name:
+                  type: string
+                  description: Name of the exam.
+                class_id:
+                  type: integer
+                  description: ID of the class.
+                date:
+                  type: string
+                  description: Date of the exam.
+                class_room:
+                  type: string
+                  description: Class room.
+                hour:
+                  type: string
+                  description: Hour of the exam.
+              required:
+                - exam_name
+                - class_id
+      responses:
+        '201':
+          description: Exam created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/add-exam-result:
+    post:
+      summary: Add an exam result
+      description: Adds a result for an exam based on exam_id, class_id, student_id, and score.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exam_id:
+                  type: integer
+                  description: ID of the exam.
+                class_id:
+                  type: integer
+                  description: ID of the class.
+                student_id:
+                  type: integer
+                  description: ID of the student.
+                score:
+                  type: number
+                  format: float
+                  description: Score of the exam.
+              required:
+                - exam_id
+                - class_id
+                - student_id
+                - score
+      responses:
+        '201':
+          description: Exam result added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields or invalid score value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/delete-exam-result:
+    delete:
+      summary: Delete an exam result
+      description: Deletes an exam result based on result_id.
+      parameters:
+        - in: query
+          name: result_id
+          required: true
+          schema:
+            type: string
+          description: ID of the exam result to delete.
+      responses:
+        '200':
+          description: Exam result deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing result_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/delete-exam:
+    delete:
+      summary: Delete an exam
+      description: Deletes an exam based on exam_id.
+      parameters:
+        - in: query
+          name: exam_id
+          required: true
+          schema:
+            type: string
+          description: ID of the exam to delete.
+      responses:
+        '200':
+          description: Exam deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing exam_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/retrieve-exam-results:
+    get:
+      summary: Retrieve exam results
+      description: Retrieves all results for an exam based on exam_id.
+      parameters:
+        - in: query
+          name: exam_id
+          required: true
+          schema:
+            type: string
+          description: ID of the exam.
+      responses:
+        '200':
+          description: Exam results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing exam_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/update-exam-result:
+    put:
+      summary: Update an exam result
+      description: Updates an exam result with the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                result_id:
+                  type: integer
+                  description: ID of the exam result.
+                score:
+                  type: number
+                  format: float
+                  description: Score of the exam.
+              required:
+                - result_id
+                - score
+      responses:
+        '200':
+          description: Exam result updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields or invalid score value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/update-exam:
+    put:
+      summary: Update an exam
+      description: Updates an exam with the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exam_id:
+                  type: integer
+                  description: ID of the exam.
+                exam_name:
+                  type: string
+                  description: Name of the exam.
+                class_id:
+                  type: integer
+                  description: ID of the class.
+                date:
+                  type: string
+                  description: Date of the exam.
+                class_room:
+                  type: string
+                  description: Class room.
+                hour:
+                  type: string
+                  description: Hour of the exam.
+              required:
+                - exam_id
+      responses:
+        '200':
+          description: Exam updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
