@@ -107,7 +107,6 @@ class ClassesDatabase:
                     JOIN classes c ON cs.class_id = c.class_id
                     WHERE cs.student_id = %s;
                 """
-                print('Query:', query)  # Debugging print
                 cur.execute(query, (student_id,))
                 classes = cur.fetchall()
                 cur.close()
