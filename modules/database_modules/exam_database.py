@@ -258,10 +258,42 @@ class ExamsDatabase:
                 print(f'Error updating score: {error_message}')
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
+    def retrieve_exam_results(self, exam_id):
+        if not exam_id:
+            return self.generate_response(success=False, error='Exam ID must be provided', status_code=400)
 
-    # TODO modify_exam_result() function
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+                # Check if the exam exists
+                check_query = """
+                    SELECT * FROM exams
+                    WHERE exam_id = %s;
+                """
+                cur.execute(check_query, (exam_id,))
+                existing_exam = cur.fetchone()
+                if not existing_exam:
+                    return self.generate_response(success=False, error='Exam not found', status_code=404)
+
+                # Retrieve the exam results
+                query = """
+                    SELECT * FROM exam_results
+                    WHERE exam_id = %s;
+                """
+                cur.execute(query, (exam_id,))
+                results = cur.fetchall()
+                conn.commit()
+                cur.close()
+                return self.generate_response(success=True, error=None, status_code=200, data=results)
+
+            except psycopg2.Error as e:
+                conn.rollback()
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f'Error retrieving exam results: {error_message}')
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
+
     # TODO delete_exam_result() function
-    # TODO retrieve_exam_results() function
 
 
 
