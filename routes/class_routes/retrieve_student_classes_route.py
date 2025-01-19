@@ -2,23 +2,23 @@ from flask import Blueprint, request, jsonify
 from modules.database_modules.class_database import ClassesDatabase
 
 
-retrieve_classes_bp = Blueprint('retrieve_classes', __name__)
+retrieve_student_classes_bp = Blueprint('retrieve_student_classes', __name__)
 db = ClassesDatabase()
 
 
-@retrieve_classes_bp.route('/retrieve-classes', methods=['GET'])
-def retrieve_classes():
+@retrieve_student_classes_bp.route('/retrieve-student-classes', methods=['GET'])
+def retrieve_student_classes():
     try:
-        teacher_id = request.args.get('teacher_id')
-        print("Received teacher ID:", teacher_id)  # Debugging print
-        if not teacher_id:
+        student_id = request.args.get('student_id')
+        print("Received student ID:", student_id)  # Debugging print
+        if not student_id:
             return jsonify(ClassesDatabase.generate_response(
                 success=False,
-                error='Missing teacher_id parameter',
+                error='Missing student_id parameter',
                 status_code=400
             )), 400
 
-        result = db.retrieve_classes(teacher_id)
+        result = db.retrieve_student_classes(student_id)
         if not result['success']:
             return jsonify(ClassesDatabase.generate_response(
                 success=False,

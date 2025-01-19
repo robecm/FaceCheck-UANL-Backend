@@ -8,7 +8,7 @@ from routes.login_routes.teacher_signup_route import teacher_signup_bp
 from routes.face_routes.check_duplicate_route import check_duplicate_bp
 from routes.face_routes.check_face_route import check_face_bp
 from routes.class_routes.register_class_route import register_class_bp
-from routes.class_routes.retrieve_classes_route import retrieve_classes_bp
+from routes.class_routes.retrieve_teacher_classes_route import retrieve_teacher_classes_bp
 from routes.class_routes.update_class_route import update_class_bp
 from routes.class_routes.delete_class_route import delete_class_bp
 from routes.class_routes.student_class_route import student_class_bp
@@ -22,6 +22,7 @@ from routes.exam_routes.add_exam_result import add_exam_result_bp
 from routes.exam_routes.update_exam_result_route import update_exam_result_bp
 from routes.exam_routes.retrieve_exam_results_route import retrieve_exam_results_bp
 from routes.exam_routes.delete_exam_result import delete_exam_result_bp
+from routes.class_routes.retrieve_student_classes_route import retrieve_student_classes_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 import subprocess
 
@@ -54,7 +55,7 @@ app.register_blueprint(check_face_bp, url_prefix='/api')
 # Register the register class blueprint
 app.register_blueprint(register_class_bp, url_prefix='/api')
 # Register the retrieve classes blueprint
-app.register_blueprint(retrieve_classes_bp, url_prefix='/api')
+app.register_blueprint(retrieve_teacher_classes_bp, url_prefix='/api')
 # Register the update class blueprint
 app.register_blueprint(update_class_bp, url_prefix='/api')
 # Register the delete class blueprint
@@ -81,6 +82,8 @@ app.register_blueprint(update_exam_result_bp, url_prefix='/api')
 app.register_blueprint(retrieve_exam_results_bp, url_prefix='/api')
 # Register delete exam result blueprint
 app.register_blueprint(delete_exam_result_bp, url_prefix='/api')
+# Register retrieve student classes blueprint
+app.register_blueprint(retrieve_student_classes_bp, url_prefix='/api')
 
 # Start a new command prompt and run the ngrok tunnel script
 # subprocess.Popen(['start', 'cmd', '/k', r'static\ngrok_tunnel.bat'], shell=True)
