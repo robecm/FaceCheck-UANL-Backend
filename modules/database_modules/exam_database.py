@@ -218,6 +218,46 @@ class ExamsDatabase:
                 print(f'Error adding score: {error_message}') # Debugging print
                 return self.generate_response(success=False, error=error_message, status_code=500)
 
+    def update_exam_result(self, result_id, score):
+        if not all([result_id, score]):
+            return self.generate_response(success=False, error='All required fields must be provided', status_code=400)
+
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor()
+
+                # Check if the result exists
+                check_query = """
+                    SELECT * FROM exam_results
+                    WHERE result_id = %s;
+                """
+                cur.execute(check_query, (result_id,))
+                existing_result = cur.fetchone()
+                if not existing_result:
+                    return self.generate_response(success=False, error='Result not found', status_code=404)
+
+                # Update the score
+                query = """
+                    UPDATE exam_results
+                    SET score = %s
+                    WHERE result_id = %s
+                    RETURNING result_id;
+                """
+                cur.execute(query, (score, result_id))
+                print('Score updated successfully')  # Debugging print
+
+                updated_result_id = cur.fetchone()[0]
+                print('Updated result ID:', updated_result_id)  # Debugging print
+                conn.commit()
+                cur.close()
+                return self.generate_response(success=True, error=None, status_code=200, data={'result_id': updated_result_id})
+
+            except psycopg2.Error as e:
+                conn.rollback()
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f'Error updating score: {error_message}')
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
+
 
     # TODO modify_exam_result() function
     # TODO delete_exam_result() function

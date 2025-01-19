@@ -2,24 +2,24 @@ from flask import Blueprint, request, jsonify
 from modules.database_modules.exam_database import ExamsDatabase
 
 
-add_exam_result_bp = Blueprint('add_exam_result', __name__)
+update_exam_result_bp = Blueprint('update_exam_result_bp', __name__)
 db = ExamsDatabase()
 
 
-@add_exam_result_bp.route('/add-exam-result', methods=['POST'])
-def add_exam_result():
+@update_exam_result_bp.route('/update-exam-result', methods=['PUT'])
+def update_exam_result():
     try:
         body = request.form if request.form else request.get_json()
-        print("Received request body:", body)  # Debugging print
-        required_fields = ['exam_id', 'class_id', 'student_id', 'score']
+        print('Received request body:', body)  # Debugging print
+        required_fields = ['result_id', 'score']
 
         # Validate that all required fields are present
         for field in required_fields:
             if field not in body or not body[field]:
-                print(f"Missing field: {field}")  # Debugging print
+                print(f'Missing required field: {field}')  # Debugging print
                 return jsonify(ExamsDatabase.generate_response(
                     success=False,
-                    error=f'Missing field: {field}',
+                    error=f'Missing required field: {field}',
                     status_code=400
                 )), 400
 
@@ -43,11 +43,11 @@ def add_exam_result():
 
         # Extract and process the exam result data
         exam_result_data = {field: body[field] for field in required_fields}
-        print("Processed exam result data:", exam_result_data)  # Debugging print
+        print('Processed exam result data:', exam_result_data)  # Debugging print
 
-        # Attempt to add the exam result to the database
-        result = db.add_exam_result(**exam_result_data)
-        print("Database result:", result)  # Debugging print
+        # Attempt to update the exam result in the database
+        result = db.update_exam_result(**exam_result_data)
+        print('Database result:', result)  # Debugging print
         if not result['success']:
             return jsonify(ExamsDatabase.generate_response(
                 success=False,
@@ -57,12 +57,12 @@ def add_exam_result():
 
         return jsonify(ExamsDatabase.generate_response(
             success=True,
-            data={'message': 'Exam result added successfully'},
-            status_code=201
-        )), 201
+            data={'message': 'Exam result updated successfully'},
+            status_code=200
+        )), 200
 
     except Exception as e:
-        print("Exception occurred:", str(e))
+        print(f'Error updating exam result: {str(e)}')
         return jsonify(ExamsDatabase.generate_response(
             success=False,
             error=str(e),
