@@ -101,10 +101,11 @@ class ClassesDatabase:
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-                query = """
-                    SELECT c.*
+                query = query = """
+                    SELECT c.*, ut.name AS teacher_name
                     FROM classes_students cs
                     JOIN classes c ON cs.class_id = c.class_id
+                    JOIN users_teachers ut ON c.teacher_id = ut.id
                     WHERE cs.student_id = %s;
                 """
                 cur.execute(query, (student_id,))
