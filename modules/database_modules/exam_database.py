@@ -142,6 +142,17 @@ class ExamsDatabase:
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor()
+
+                # Check if the exam exists
+                check_query = """
+                    SELECT * FROM exams
+                    WHERE exam_id = %s;
+                """
+                cur.execute(check_query, (exam_id,))
+                existing_exam = cur.fetchone()
+                if not existing_exam:
+                    return self.generate_response(success=False, error='Exam not found', status_code=404)
+
                 query = """
                     DELETE FROM exams
                     WHERE exam_id = %s
@@ -293,9 +304,41 @@ class ExamsDatabase:
                 print(f'Error retrieving exam results: {error_message}')
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
-    # TODO delete_exam_result() function
+    def delete_exam_result(self, result_id):
+        if not result_id:
+            return self.generate_response(success=False, error='Result ID must be provided', status_code=400)
 
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor()
 
+                # Check if the result exists
+                check_query = """
+                    SELECT * FROM exam_results
+                    WHERE result_id = %s;
+                """
+                cur.execute(check_query, (result_id,))
+                existing_result = cur.fetchone()
+                if not existing_result:
+                    return self.generate_response(success=False, error='Result not found', status_code=404)
+
+                # Delete the result
+                query = """
+                    DELETE FROM exam_results
+                    WHERE result_id = %s
+                    RETURNING result_id;
+                """
+                cur.execute(query, (result_id,))
+                deleted_result_id = cur.fetchone()[0]
+                conn.commit()
+                cur.close()
+                return self.generate_response(success=True, error=None, status_code=200, data={'result_id': deleted_result_id})
+
+            except psycopg2.Error as e:
+                conn.rollback()
+                error_message = e.pgerror if e.pgerror else str(e)
+                print(f'Error deleting result: {error_message}')
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
 
     # Private method to generate a consistent JSON response
