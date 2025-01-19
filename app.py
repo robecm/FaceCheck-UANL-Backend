@@ -18,6 +18,10 @@ from routes.exam_routes.create_exam_route import create_exam_bp
 from routes.exam_routes.update_exam_route import update_exam_bp
 from routes.exam_routes.delete_exam_route import delete_exam_bp
 from routes.class_routes.retrieve_class_exams_route import retrieve_class_exams_bp
+from routes.exam_routes.add_exam_result import add_exam_result_bp
+from routes.exam_routes.update_exam_result_route import update_exam_result_bp
+from routes.exam_routes.retrieve_exam_results_route import retrieve_exam_results_bp
+from routes.exam_routes.delete_exam_result import delete_exam_result_bp
 from flask_swagger_ui import get_swaggerui_blueprint
 import subprocess
 
@@ -69,7 +73,14 @@ app.register_blueprint(update_exam_bp, url_prefix='/api')
 app.register_blueprint(delete_exam_bp, url_prefix='/api')
 # Register retrieve class exams blueprint
 app.register_blueprint(retrieve_class_exams_bp, url_prefix='/api')
-
+# Register add exam result blueprint
+app.register_blueprint(add_exam_result_bp, url_prefix='/api')
+# Register update exam result blueprint
+app.register_blueprint(update_exam_result_bp, url_prefix='/api')
+# Register retrieve exam results blueprint
+app.register_blueprint(retrieve_exam_results_bp, url_prefix='/api')
+# Register delete exam result blueprint
+app.register_blueprint(delete_exam_result_bp, url_prefix='/api')
 
 # Start a new command prompt and run the ngrok tunnel script
 # subprocess.Popen(['start', 'cmd', '/k', r'static\ngrok_tunnel.bat'], shell=True)
