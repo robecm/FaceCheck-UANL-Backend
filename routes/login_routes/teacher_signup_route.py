@@ -9,7 +9,7 @@ db = LoginSignupDatabase()
 BAD_REQUEST_MSG = 'All fields must be present.'
 
 
-@teacher_signup_bp.route('/teacher-signup', methods=['POST'])
+@teacher_signup_bp.route('/signup/teacher', methods=['POST'])
 def teacher_signup():
     try:
         body = request.get_json()

@@ -6,7 +6,7 @@ student_signup_bp = Blueprint('student_signup', __name__)
 db = LoginSignupDatabase()
 
 
-@student_signup_bp.route('/student-signup', methods=['POST'])
+@student_signup_bp.route('/signup/student', methods=['POST'])
 def student_signup():
     try:
         body = request.form if request.form else request.get_json()

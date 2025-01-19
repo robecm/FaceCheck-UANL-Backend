@@ -12,7 +12,7 @@ INCORRECT_PASSWORD_MSG = 'Incorrect password.'
 SUCCESSFUL_LOGIN_MSG = 'Successful login.'
 
 
-@student_login_bp.route('/student-login', methods=['POST'])
+@student_login_bp.route('/login/student', methods=['POST'])
 def student_login():
     try:
         # Obtener los datos del JSON enviado en la solicitud

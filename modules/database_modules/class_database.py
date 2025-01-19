@@ -49,6 +49,28 @@ class ClassesDatabase:
             try:
                 cur = conn.cursor()
 
+                # Check if the teacher exists
+                check_query = """
+                    SELECT 1 FROM users_teachers
+                    WHERE id = %s;
+                """
+                cur.execute(check_query, (filtered_kwargs['teacher_id'],))
+                existing_teacher = cur.fetchone()
+                if not existing_teacher:
+                    return self.generate_response(success=False, error='Teacher not found.', status_code=404)
+
+                # Check if the class already exists
+                check_query = """
+                    SELECT 1 FROM classes
+                    WHERE class_name = %s AND teacher_id = %s AND group_num = %s AND semester = %s;
+                """
+                cur.execute(check_query,
+                            (filtered_kwargs['class_name'], filtered_kwargs['teacher_id'],
+                             filtered_kwargs['group_num'], filtered_kwargs['semester']))
+                existing_class = cur.fetchone()
+                if existing_class:
+                    return self.generate_response(success=False, error='Class already exists.', status_code=400)
+
                 # Insert the class data into the database
                 columns = ', '.join(filtered_kwargs.keys())
                 values = ', '.join([f'%({field})s' for field in filtered_kwargs.keys()])
@@ -79,6 +101,18 @@ class ClassesDatabase:
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+                # Check if the teacher exists
+                check_query = """
+                    SELECT 1 FROM users_teachers
+                    WHERE id = %s;
+                """
+                cur.execute(check_query, (teacher_id,))
+                existing_teacher = cur.fetchone()
+                if not existing_teacher:
+                    return self.generate_response(success=False, error='Teacher not found.', status_code=404)
+
+                # Retrieve the classes taught by the teacher
                 query = """
                     SELECT * FROM classes
                     WHERE teacher_id = %s;
@@ -101,7 +135,19 @@ class ClassesDatabase:
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-                query = query = """
+
+                # Check if the student exists
+                check_query = """
+                    SELECT 1 FROM users_students
+                    WHERE id = %s;
+                """
+                cur.execute(check_query, (student_id,))
+                existing_student = cur.fetchone()
+                if not existing_student:
+                    return self.generate_response(success=False, error='Student not found.', status_code=404)
+
+                # Retrieve the classes attended by the student
+                query = """
                     SELECT c.*, ut.name AS teacher_name
                     FROM classes_students cs
                     JOIN classes c ON cs.class_id = c.class_id
@@ -137,6 +183,16 @@ class ClassesDatabase:
             try:
                 cur = conn.cursor()
 
+                # Check if the class exists
+                check_query = """
+                    SELECT 1 FROM classes
+                    WHERE class_id = %s;
+                """
+                cur.execute(check_query, (class_id,))
+                existing_class = cur.fetchone()
+                if not existing_class:
+                    return self.generate_response(success=False, error='Class not found.', status_code=404)
+
                 # Construct the query dynamically
                 set_clause = ', '.join([f'{field} = %({field})s' for field in filtered_kwargs.keys()])
                 query = f"""
@@ -168,6 +224,18 @@ class ClassesDatabase:
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor()
+
+                # Check if the class exists
+                check_query = """
+                    SELECT 1 FROM classes
+                    WHERE class_id = %s;
+                """
+                cur.execute(check_query, (class_id,))
+                existing_class = cur.fetchone()
+                if not existing_class:
+                    return self.generate_response(success=False, error='Class not found.', status_code=404)
+
+                # Delete the class
                 query = """
                     DELETE FROM classes
                     WHERE class_id = %s
@@ -192,6 +260,26 @@ class ClassesDatabase:
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor()
+
+                # Check if the class exists
+                check_query = """
+                    SELECT 1 FROM classes
+                    WHERE class_id = %s;
+                """
+                cur.execute(check_query, (class_id,))
+                existing_class = cur.fetchone()
+                if not existing_class:
+                    return self.generate_response(success=False, error='Class not found.', status_code=404)
+
+                # Check if the student exists
+                check_query = """
+                    SELECT 1 FROM users_students
+                    WHERE id = %s;
+                """
+                cur.execute(check_query, (student_id,))
+                existing_student = cur.fetchone()
+                if not existing_student:
+                    return self.generate_response(success=False, error='Student not found.', status_code=404)
 
                 # Check if the student is already registered in the class
                 query = """
@@ -226,6 +314,18 @@ class ClassesDatabase:
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+                # Check if the class exists
+                check_query = """
+                    SELECT 1 FROM classes
+                    WHERE class_id = %s;
+                """
+                cur.execute(check_query, (class_id,))
+                existing_class = cur.fetchone()
+                if not existing_class:
+                    return self.generate_response(success=False, error='Class not found.', status_code=404)
+
+                # Retrieve the students registered in the class
                 query = """
                     SELECT users_students.id, name, username, email, faculty, matnum
                     FROM users_students
@@ -250,6 +350,26 @@ class ClassesDatabase:
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor()
+
+                # Check if the class exists
+                check_query = """
+                    SELECT 1 FROM classes
+                    WHERE class_id = %s;
+                """
+                cur.execute(check_query, (class_id,))
+                existing_class = cur.fetchone()
+                if not existing_class:
+                    return self.generate_response(success=False, error='Class not found.', status_code=404)
+
+                # Check if the student exists
+                check_query = """
+                    SELECT 1 FROM users_students
+                    WHERE id = %s;
+                """
+                cur.execute(check_query, (student_id,))
+                existing_student = cur.fetchone()
+                if not existing_student:
+                    return self.generate_response(success=False, error='Student not found.', status_code=404)
 
                 # Check if the student is registered in the class
                 check_query = """
@@ -288,6 +408,18 @@ class ClassesDatabase:
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+                # Check if the class exists
+                check_query = """
+                    SELECT 1 FROM classes
+                    WHERE class_id = %s;
+                """
+                cur.execute(check_query, (class_id,))
+                existing_class = cur.fetchone()
+                if not existing_class:
+                    return self.generate_response(success=False, error='Class not found.', status_code=404)
+
+                # Retrieve the exams for the class
                 query = """
                     SELECT * FROM exams
                     WHERE class_id = %s;
@@ -313,7 +445,6 @@ class ClassesDatabase:
                 error_message = e.pgerror if e.pgerror else str(e)
                 print(f"Error retrieving class exams: {error_message}")
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
-
 
     # Private method to generate a consistent JSON response
     @staticmethod

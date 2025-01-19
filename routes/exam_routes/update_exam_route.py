@@ -6,7 +6,7 @@ update_exam_bp = Blueprint('update_exam_bp', __name__)
 db = ExamsDatabase()
 
 
-@update_exam_bp.route('/update-exam', methods=['PUT'])
+@update_exam_bp.route('/exam/update', methods=['PUT'])
 def update_exam():
     try:
         body = request.form if request.form else request.get_json()

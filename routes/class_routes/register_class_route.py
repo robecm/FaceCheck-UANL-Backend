@@ -6,7 +6,7 @@ register_class_bp = Blueprint('register_class', __name__)
 db = ClassesDatabase()
 
 
-@register_class_bp.route('/register-class', methods=['POST'])
+@register_class_bp.route('/class/register', methods=['POST'])
 def register_class():
     try:
         body = request.form if request.form else request.get_json()

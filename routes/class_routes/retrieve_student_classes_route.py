@@ -6,7 +6,7 @@ retrieve_student_classes_bp = Blueprint('retrieve_student_classes', __name__)
 db = ClassesDatabase()
 
 
-@retrieve_student_classes_bp.route('/retrieve-student-classes', methods=['GET'])
+@retrieve_student_classes_bp.route('/student/classes', methods=['GET'])
 def retrieve_student_classes():
     try:
         student_id = request.args.get('student_id')

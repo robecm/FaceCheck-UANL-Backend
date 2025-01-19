@@ -11,7 +11,7 @@ def decode_images(cap_frame_base64, ref_frame_base64):
     return cap_frame, ref_frame
 
 
-@verify_face_bp.route('/verify-face', methods=['POST'])
+@verify_face_bp.route('/face/verify', methods=['POST'])
 def verify_face():
     try:
         body = request.get_json()

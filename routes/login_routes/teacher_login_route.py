@@ -12,7 +12,7 @@ INCORRECT_PASSWORD_MSG = 'Incorrect password.'
 SUCCESSFUL_LOGIN_MSG = 'Successful login.'
 
 
-@teacher_login_bp.route('/teacher-login', methods=['POST'])
+@teacher_login_bp.route('/login/teacher', methods=['POST'])
 def teacher_login():
     try:
         # Get the data from the JSON sent in the request

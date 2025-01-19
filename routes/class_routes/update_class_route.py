@@ -6,7 +6,7 @@ update_class_bp = Blueprint('update_class', __name__)
 db = ClassesDatabase()
 
 
-@update_class_bp.route('/update-class', methods=['PUT'])
+@update_class_bp.route('/class/update', methods=['PUT'])
 def update_class():
     try:
         body = request.form if request.form else request.get_json()

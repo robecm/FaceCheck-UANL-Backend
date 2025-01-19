@@ -6,7 +6,7 @@ student_class_bp = Blueprint('student_class', __name__)
 db = ClassesDatabase()
 
 
-@student_class_bp.route('/student-class', methods=['POST'])
+@student_class_bp.route('/class/add-student', methods=['POST'])
 def student_class():
     try:
         print('Request received') # Debugging print

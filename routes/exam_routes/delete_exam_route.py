@@ -6,7 +6,7 @@ delete_exam_bp = Blueprint('delete_exam_route', __name__)
 db = ExamsDatabase()
 
 
-@delete_exam_bp.route('/delete-exam', methods=['DELETE'])
+@delete_exam_bp.route('/exam/delete', methods=['DELETE'])
 def delete_exam():
     try:
         exam_id = request.args.get('exam_id')

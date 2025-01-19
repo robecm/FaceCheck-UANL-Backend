@@ -7,7 +7,7 @@ from routes.login_routes.student_signup_route import student_signup_bp
 from routes.login_routes.student_login_route import student_login_bp
 from routes.login_routes.teacher_login_route import teacher_login_bp
 from routes.login_routes.teacher_signup_route import teacher_signup_bp
-from routes.face_routes.check_duplicate_route import check_duplicate_bp
+from routes.login_routes.check_duplicate_route import check_duplicate_bp
 from routes.face_routes.check_face_route import check_face_bp
 from routes.class_routes.register_class_route import register_class_bp
 from routes.class_routes.retrieve_teacher_classes_route import retrieve_teacher_classes_bp
@@ -26,7 +26,6 @@ from routes.exam_routes.retrieve_exam_results_route import retrieve_exam_results
 from routes.exam_routes.delete_exam_result import delete_exam_result_bp
 from routes.class_routes.retrieve_student_classes_route import retrieve_student_classes_bp
 from routes.student_routes.retrieve_student_teachers_route import retrieve_student_teachers_bp
-import subprocess
 
 app = Flask(__name__)
 
