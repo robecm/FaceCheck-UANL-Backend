@@ -1,5 +1,7 @@
+# python
 from flask import Flask
 from flask_cors import CORS
+from flask_swagger_ui import get_swaggerui_blueprint
 from routes.face_routes.verify_face_route import verify_face_bp
 from routes.login_routes.student_signup_route import student_signup_bp
 from routes.login_routes.student_login_route import student_login_bp
@@ -23,7 +25,7 @@ from routes.exam_routes.update_exam_result_route import update_exam_result_bp
 from routes.exam_routes.retrieve_exam_results_route import retrieve_exam_results_bp
 from routes.exam_routes.delete_exam_result import delete_exam_result_bp
 from routes.class_routes.retrieve_student_classes_route import retrieve_student_classes_bp
-from flask_swagger_ui import get_swaggerui_blueprint
+from routes.student_routes.retrieve_student_teachers_route import retrieve_student_teachers_bp
 import subprocess
 
 app = Flask(__name__)
@@ -32,62 +34,42 @@ app = Flask(__name__)
 CORS(app)
 
 # SWAGGER CONFIGURATION
-# Create a Swagger UI blueprint to serve API documentation
 swaggerui_bp = get_swaggerui_blueprint('/api-docs', '/static/swagger.yaml')
 
 # REGISTER BLUEPRINTS
-# Register the Swagger UI blueprint
-app.register_blueprint(swaggerui_bp, url_prefix='/api-docs')
-# Register the facecheck blueprint
-app.register_blueprint(verify_face_bp, url_prefix='/api')
-# Register the user signup blueprint
-app.register_blueprint(student_signup_bp, url_prefix='/api')
-# Register the teacher signup blueprint
-app.register_blueprint(teacher_signup_bp, url_prefix='/api')
-# Register the user login blueprint
-app.register_blueprint(student_login_bp, url_prefix='/api')
-# Register the teacher login blueprint
-app.register_blueprint(teacher_login_bp, url_prefix='/api')
-# Register the check duplicate blueprint
-app.register_blueprint(check_duplicate_bp, url_prefix='/api')
-# Register the check face blueprint
-app.register_blueprint(check_face_bp, url_prefix='/api')
-# Register the register class blueprint
-app.register_blueprint(register_class_bp, url_prefix='/api')
-# Register the retrieve classes blueprint
-app.register_blueprint(retrieve_teacher_classes_bp, url_prefix='/api')
-# Register the update class blueprint
-app.register_blueprint(update_class_bp, url_prefix='/api')
-# Register the delete class blueprint
-app.register_blueprint(delete_class_bp, url_prefix='/api')
-# Register the student class blueprint
-app.register_blueprint(student_class_bp, url_prefix='/api')
-# Register the retrieve class students blueprint
-app.register_blueprint(retrieve_class_students_bp, url_prefix='/api')
-# Register the delete student class blueprint
-app.register_blueprint(delete_student_class_bp, url_prefix='/api')
-# Register create exam blueprint
-app.register_blueprint(create_exam_bp, url_prefix='/api')
-# Register update exam blueprint
-app.register_blueprint(update_exam_bp, url_prefix='/api')
-# Register delete exam blueprint
-app.register_blueprint(delete_exam_bp, url_prefix='/api')
-# Register retrieve class exams blueprint
-app.register_blueprint(retrieve_class_exams_bp, url_prefix='/api')
-# Register add exam result blueprint
-app.register_blueprint(add_exam_result_bp, url_prefix='/api')
-# Register update exam result blueprint
-app.register_blueprint(update_exam_result_bp, url_prefix='/api')
-# Register retrieve exam results blueprint
-app.register_blueprint(retrieve_exam_results_bp, url_prefix='/api')
-# Register delete exam result blueprint
-app.register_blueprint(delete_exam_result_bp, url_prefix='/api')
-# Register retrieve student classes blueprint
-app.register_blueprint(retrieve_student_classes_bp, url_prefix='/api')
+blueprints = [
+    (swaggerui_bp, '/api-docs'),
+    (verify_face_bp, '/api'),
+    (student_signup_bp, '/api'),
+    (teacher_signup_bp, '/api'),
+    (student_login_bp, '/api'),
+    (teacher_login_bp, '/api'),
+    (check_duplicate_bp, '/api'),
+    (check_face_bp, '/api'),
+    (register_class_bp, '/api'),
+    (retrieve_teacher_classes_bp, '/api'),
+    (update_class_bp, '/api'),
+    (delete_class_bp, '/api'),
+    (student_class_bp, '/api'),
+    (retrieve_class_students_bp, '/api'),
+    (delete_student_class_bp, '/api'),
+    (create_exam_bp, '/api'),
+    (update_exam_bp, '/api'),
+    (delete_exam_bp, '/api'),
+    (retrieve_class_exams_bp, '/api'),
+    (add_exam_result_bp, '/api'),
+    (update_exam_result_bp, '/api'),
+    (retrieve_exam_results_bp, '/api'),
+    (delete_exam_result_bp, '/api'),
+    (retrieve_student_classes_bp, '/api'),
+    (retrieve_student_teachers_bp, '/api')
+]
+
+for bp, url_prefix in blueprints:
+    app.register_blueprint(bp, url_prefix=url_prefix)
 
 # Start a new command prompt and run the ngrok tunnel script
 # subprocess.Popen(['start', 'cmd', '/k', r'static\ngrok_tunnel.bat'], shell=True)
 
 if __name__ == '__main__':
-    # Run the Flask application with debug mode and specified host and port
     app.run(debug=True, host='0.0.0.0', port=5000)

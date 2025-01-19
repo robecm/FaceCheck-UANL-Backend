@@ -1608,3 +1608,67 @@ paths:
                     type: string
                   status_code:
                     type: integer
+
+  /retrieve-student-teachers:
+      get:
+        summary: Retrieve teachers for a student
+        description: Retrieve the list of teachers and their classes for a given student.
+        parameters:
+          - in: query
+            name: student_id
+            required: true
+            schema:
+              type: string
+            description: The ID of the student.
+        responses:
+          '200':
+            description: A list of teachers and their classes.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          email:
+                            type: string
+                          class_name:
+                            type: array
+                            items:
+                              type: string
+                    status_code:
+                      type: integer
+          '400':
+            description: Missing or invalid student_id parameter.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    error:
+                      type: string
+                    status_code:
+                      type: integer
+          '500':
+            description: Internal server error.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    error:
+                      type: string
+                    status_code:
+                      type: integer
+
