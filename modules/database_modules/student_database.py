@@ -135,13 +135,14 @@ class StudentDatabase:
 
                 # Retrieve the exams taken by the student
                 query = """
-                    SELECT e.*, er.score,c.class_name, ut.name AS teacher_name
+                    SELECT e.*, er.score, c.class_name, ut.name AS teacher_name
                     FROM classes_students cs
                     JOIN exams e ON cs.class_id = e.class_id
                     JOIN classes c ON cs.class_id = c.class_id
                     JOIN users_teachers ut ON c.teacher_id = ut.id
-                    JOIN exam_results er ON e.exam_id = er.exam_id
-                    WHERE cs.student_id = %s;
+                    JOIN exam_results er ON e.exam_id = er.exam_id 
+                    AND cs.student_id = er.student_id
+                    WHERE cs.student_id = 103;
                 """
                 cur.execute(query, (student_id,))
                 exams = cur.fetchall()

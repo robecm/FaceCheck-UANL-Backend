@@ -1738,3 +1738,80 @@ paths:
                     status_code:
                       type: integer
 
+  /api/student/exams:
+    get:
+      summary: Retrieve exams for a student
+      description: Retrieves all exams for a student based on student_id.
+      tags:
+        - Estudiantes
+      parameters:
+        - in: query
+          name: student_id
+          required: true
+          schema:
+            type: string
+          description: The ID of the student.
+      responses:
+        '200':
+          description: Exams retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        exam_id:
+                          type: integer
+                        exam_name:
+                          type: string
+                        class_id:
+                          type: integer
+                        date:
+                          type: string
+                          format: date
+                        class_room:
+                          type: string
+                        hour:
+                          type: string
+                          format: time
+                        score:
+                          type: number
+                          format: float
+                        class_name:
+                          type: string
+                        teacher_name:
+                          type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing or invalid student_id parameter.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
