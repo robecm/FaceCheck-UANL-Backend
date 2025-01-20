@@ -142,7 +142,7 @@ class StudentDatabase:
                     JOIN users_teachers ut ON c.teacher_id = ut.id
                     JOIN exam_results er ON e.exam_id = er.exam_id 
                     AND cs.student_id = er.student_id
-                    WHERE cs.student_id = 103;
+                    WHERE cs.student_id = %s;
                 """
                 cur.execute(query, (student_id,))
                 exams = cur.fetchall()
