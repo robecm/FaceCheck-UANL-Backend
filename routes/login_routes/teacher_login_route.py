@@ -44,12 +44,12 @@ def teacher_login():
         user_registered_data = db.get_user_by_worknum(user_entered_data['worknum'])
 
         # Check if the user was found
-        if not user_registered_data:
+        if not user_registered_data['success']:
             return jsonify(LoginSignupDatabase.generate_response(
                 success=False,
                 error=USER_NOT_FOUND_MSG,
-                status_code=402
-            )), 402
+                status_code=404
+            )), 404
 
         # Log to verify the data of the retrieved user
         print("Retrieved user data:", user_registered_data)
