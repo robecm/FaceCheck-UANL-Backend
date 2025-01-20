@@ -24,9 +24,9 @@ from routes.exam_routes.add_exam_result import add_exam_result_bp
 from routes.exam_routes.update_exam_result_route import update_exam_result_bp
 from routes.exam_routes.retrieve_exam_results_route import retrieve_exam_results_bp
 from routes.exam_routes.delete_exam_result import delete_exam_result_bp
-from routes.class_routes.retrieve_student_classes_route import retrieve_student_classes_bp
+from routes.student_routes.retrieve_student_classes_route import retrieve_student_classes_bp
 from routes.student_routes.retrieve_student_teachers_route import retrieve_student_teachers_bp
-import subprocess
+from routes.student_routes.retrieve_student_exams_route import retrieve_student_exams_bp
 
 app = Flask(__name__)
 
@@ -62,7 +62,8 @@ blueprints = [
     (retrieve_exam_results_bp, '/api'),
     (delete_exam_result_bp, '/api'),
     (retrieve_student_classes_bp, '/api'),
-    (retrieve_student_teachers_bp, '/api')
+    (retrieve_student_teachers_bp, '/api'),
+    (retrieve_student_exams_bp, '/api')
 ]
 
 for bp, url_prefix in blueprints:
