@@ -70,6 +70,7 @@ for bp, url_prefix in blueprints:
     app.register_blueprint(bp, url_prefix=url_prefix)
 
 # Start a new command prompt and run the ngrok tunnel script
+# import subprocess
 # subprocess.Popen(['start', 'cmd', '/k', r'static\ngrok_tunnel.bat'], shell=True)
 
 if __name__ == '__main__':

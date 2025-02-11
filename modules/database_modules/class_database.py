@@ -218,9 +218,9 @@ class ClassesDatabase:
                 print(f"Error deleting class: {error_message}")
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
-    def add_student_to_class(self, student_id, class_id):
-        if not student_id or not class_id:
-            return self.generate_response(success=False, error='Both student ID and class ID must be provided.', status_code=400)
+    def add_student_to_class(self, matnum, class_id):
+        if not matnum or not class_id:
+            return self.generate_response(success=False, error='Both matnum and class ID must be provided.', status_code=400)
 
         with db_connection(self.credentials) as conn:
             try:
@@ -236,26 +236,29 @@ class ClassesDatabase:
                 if not existing_class:
                     return self.generate_response(success=False, error='Class not found.', status_code=404)
 
-                # Check if the student exists
+                # Check if the student exists and retrieve the student ID
                 check_query = """
-                    SELECT 1 FROM users_students
-                    WHERE id = %s;
+                    SELECT id FROM users_students
+                    WHERE matnum = %s;
                 """
-                cur.execute(check_query, (student_id,))
+                cur.execute(check_query, (str(matnum),))  # Convert matnum to string
                 existing_student = cur.fetchone()
                 if not existing_student:
                     return self.generate_response(success=False, error='Student not found.', status_code=404)
 
+                student_id = existing_student[0]
+
                 # Check if the student is already registered in the class
                 query = """
-                    SELECT * FROM classes_students
+                    SELECT 1 FROM classes_students
                     WHERE student_id = %s AND class_id = %s;
                 """
                 cur.execute(query, (student_id, class_id))
-                existing_student = cur.fetchone()
-                if existing_student:
+                existing_registration = cur.fetchone()
+                if existing_registration:
                     return self.generate_response(success=False, error='Student is already registered in the class.', status_code=400)
 
+                # Insert the student into the class
                 query = """
                     INSERT INTO classes_students (student_id, class_id)
                     VALUES (%s, %s)

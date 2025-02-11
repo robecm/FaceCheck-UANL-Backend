@@ -12,7 +12,7 @@ def student_class():
         print('Request received') # Debugging print
         body = request.form if request.form else request.get_json()
         print('Received request body:', body) # Debugging print
-        required_fields = ['student_id', 'class_id']
+        required_fields = ['matnum', 'class_id']
 
         # Validate that all required fields are present
         for field in required_fields:
