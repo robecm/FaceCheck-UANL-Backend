@@ -1292,135 +1292,6 @@ paths:
                   status_code:
                     type: integer
 
-  /api/exam/add-result:
-    post:
-      summary: Add an exam result
-      description: Adds a result for an exam based on exam_id, class_id, student_id, and score.
-      tags:
-        - Exámenes
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                exam_id:
-                  type: integer
-                  description: ID of the exam.
-                class_id:
-                  type: integer
-                  description: ID of the class.
-                student_id:
-                  type: integer
-                  description: ID of the student.
-                score:
-                  type: number
-                  format: float
-                  description: Score of the exam.
-              required:
-                - exam_id
-                - class_id
-                - student_id
-                - score
-      responses:
-        '201':
-          description: Exam result added successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                  status_code:
-                    type: integer
-        '400':
-          description: Missing required fields or invalid score value
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  error:
-                    type: string
-                  status_code:
-                    type: integer
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  error:
-                    type: string
-                  status_code:
-                    type: integer
-
-  /api/exam/delete-result:
-    delete:
-      summary: Delete an exam result
-      description: Deletes an exam result based on result_id.
-      tags:
-        - Exámenes
-      parameters:
-        - in: query
-          name: result_id
-          required: true
-          schema:
-            type: string
-          description: ID of the exam result to delete.
-      responses:
-        '200':
-          description: Exam result deleted successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  data:
-                    type: object
-                  status_code:
-                    type: integer
-        '400':
-          description: Missing result_id parameter
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  error:
-                    type: string
-                  status_code:
-                    type: integer
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  error:
-                    type: string
-                  status_code:
-                    type: integer
-
   /api/exam/delete:
     delete:
       summary: Delete an exam
@@ -1529,10 +1400,10 @@ paths:
                   status_code:
                     type: integer
 
-  /api/exam/update-result:
-    put:
-      summary: Update an exam result
-      description: Updates an exam result with the provided details.
+  /api/exam/modify-result:
+    post:
+      summary: Modify exam results
+      description: Modifies multiple exam results with the provided details.
       tags:
         - Exámenes
       requestBody:
@@ -1542,19 +1413,32 @@ paths:
             schema:
               type: object
               properties:
-                result_id:
-                  type: integer
-                  description: ID of the exam result.
-                score:
-                  type: number
-                  format: float
-                  description: Score of the exam.
-              required:
-                - result_id
-                - score
+                results:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      result_id:
+                        type: integer
+                        description: ID of the exam result (optional for new results).
+                      score:
+                        type: number
+                        format: float
+                        description: Score of the exam. Must be a number between 0 and 100.
+                      student_id:
+                        type: integer
+                        description: ID of the student (required for new results).
+                      exam_id:
+                        type: integer
+                        description: ID of the exam (required for new results).
+                      class_id:
+                        type: integer
+                        description: ID of the class (required for new results).
+                  required:
+                    - score
       responses:
         '200':
-          description: Exam result updated successfully
+          description: All exam results processed successfully
           content:
             application/json:
               schema:
@@ -1570,7 +1454,7 @@ paths:
                   status_code:
                     type: integer
         '400':
-          description: Missing required fields or invalid score value
+          description: Missing required fields or invalid score value. Score must be a number between 0 and 100.
           content:
             application/json:
               schema:
