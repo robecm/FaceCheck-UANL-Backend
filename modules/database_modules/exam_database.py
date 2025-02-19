@@ -277,9 +277,9 @@ class ExamsDatabase:
             try:
                 cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-                # Check if the exam exists
+                # Check if the exam exists and retrieve the class_id
                 check_query = """
-                    SELECT * FROM exams
+                    SELECT exam_id, class_id FROM exams
                     WHERE exam_id = %s;
                 """
                 cur.execute(check_query, (exam_id,))
@@ -287,16 +287,25 @@ class ExamsDatabase:
                 if not existing_exam:
                     return self.generate_response(success=False, error='Exam not found', status_code=404)
 
-                # Retrieve the exam results
+                # Retrieve each enrolled student's info and score (if exists)
                 query = """
-                    SELECT * FROM exam_results
-                    WHERE exam_id = %s;
+                    SELECT us.id AS student_id,
+                           us.name AS student_name,
+                           us.matnum AS student_matnum,
+                           er.score
+                    FROM classes_students cs
+                    JOIN users_students us ON cs.student_id = us.id
+                    JOIN exams e ON e.class_id = cs.class_id
+                    LEFT JOIN exam_results er ON er.exam_id = e.exam_id
+                                            AND er.student_id = us.id
+                    WHERE e.exam_id = %s;
                 """
                 cur.execute(query, (exam_id,))
-                results = cur.fetchall()
+                data = cur.fetchall()
                 conn.commit()
                 cur.close()
-                return self.generate_response(success=True, error=None, status_code=200, data=results)
+
+                return self.generate_response(success=True, error=None, status_code=200, data=data)
 
             except psycopg2.Error as e:
                 conn.rollback()
