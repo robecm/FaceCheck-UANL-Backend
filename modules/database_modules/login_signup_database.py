@@ -79,7 +79,7 @@ class LoginSignupDatabase:
 
                 conn.commit()
                 cur.close()
-                return self.generate_response(success=True, error=None, status_code=201)
+                return self.generate_response(success=True, error=None, status_code=201, student_id=student_id)
 
             except psycopg2.Error as e:
                 conn.rollback()
@@ -141,7 +141,7 @@ class LoginSignupDatabase:
 
                 conn.commit()
                 cur.close()
-                return self.generate_response(success=True, error=None, status_code=201)
+                return self.generate_response(success=True, error=None, status_code=201, teacher_id=teacher_id)
 
             except psycopg2.Error as e:
                 conn.rollback()

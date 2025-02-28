@@ -40,7 +40,7 @@ def student_signup():
 
         return jsonify(LoginSignupDatabase.generate_response(
             success=True,
-            data={'message': 'User registered successfully'},
+            data={'message': 'User registered successfully', 'student_id': result['student_id']},
             status_code=201
         )), 201
 
