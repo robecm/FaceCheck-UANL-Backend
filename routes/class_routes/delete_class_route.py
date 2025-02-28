@@ -6,7 +6,7 @@ delete_class_bp = Blueprint('delete_class_route', __name__)
 db = ClassesDatabase()
 
 
-@delete_class_bp.route('/delete-class', methods=['DELETE'])
+@delete_class_bp.route('/class/delete', methods=['DELETE'])
 def delete_class():
     try:
         class_id = request.args.get('class_id')

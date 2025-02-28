@@ -3,7 +3,7 @@ from modules.facecheck import FaceCheck, ImageProcessor
 
 check_face_bp = Blueprint('check_face', __name__)
 
-@check_face_bp.route('/check-face', methods=['POST'])
+@check_face_bp.route('/face/check-existing', methods=['POST'])
 def check_face():
     try:
         body = request.get_json()

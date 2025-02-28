@@ -9,11 +9,31 @@ servers:
   - url: https://living-improved-ocelot.ngrok-free.app/
     description: Servidor en linea
 
+tags:
+  - name: Registro
+    description: Operaciones relacionadas con el registro de usuarios.
+  - name: Inicio de Sesión
+    description: Operaciones relacionadas con el inicio de sesión de usuarios.
+  - name: Rostros
+    description: Operaciones relacionadas con la verificación de rostros.
+  - name: Estudiantes
+    description: Operaciones relacionadas con estudiantes.
+  - name: Profesores
+    description: Operaciones relacionadas con profesores.
+  - name: Clases
+    description: Operaciones relacionadas con las clases.
+  - name: Exámenes
+    description: Operaciones relacionadas con los exámenes.
+
+
 paths:
-  /api/student-signup:
+
+  /api/signup/student:
     post:
       summary: Registrar estudiante
       description: Registra un nuevo estudiante proporcionando los datos necesarios.
+      tags:
+        - Registro
       requestBody:
         required: true
         content:
@@ -116,10 +136,12 @@ paths:
                   status_code:
                     type: integer
 
-  /api/student-login:
+  /api/signup/student-duplicate:
     post:
-      summary: Iniciar sesión de estudiante
-      description: Permite a un estudiante iniciar sesión proporcionando su número de matrícula y contraseña.
+      summary: Verificar duplicado de usuario
+      description: Verifica si un usuario ya existe en la base de datos basado en email, matnum o username.
+      tags:
+        - Registro
       requestBody:
         required: true
         content:
@@ -127,18 +149,23 @@ paths:
             schema:
               type: object
               properties:
+                email:
+                  type: string
+                  format: email
+                  description: Correo electrónico del usuario.
                 matnum:
                   type: string
-                  description: Número de matrícula del estudiante.
-                password:
+                  description: Número de matrícula del usuario.
+                username:
                   type: string
-                  description: Contraseña del estudiante.
+                  description: Nombre de usuario.
               required:
+                - email
                 - matnum
-                - password
+                - username
       responses:
         '200':
-          description: Inicio de sesión exitoso
+          description: No se encontraron duplicados
           content:
             application/json:
               schema:
@@ -146,15 +173,6 @@ paths:
                 properties:
                   success:
                     type: boolean
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                      face_img:
-                        type: string
-                        format: base64
-                        description: Imagen de rostro en base64.
                   status_code:
                     type: integer
         '400':
@@ -170,8 +188,8 @@ paths:
                     type: string
                   status_code:
                     type: integer
-        '402':
-          description: Estudiante no encontrado
+        '409':
+          description: Usuario ya registrado
           content:
             application/json:
               schema:
@@ -183,19 +201,9 @@ paths:
                     type: string
                   status_code:
                     type: integer
-        '403':
-          description: Contraseña incorrecta
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  error:
+                  duplicate_field:
                     type: string
-                  status_code:
-                    type: integer
+                    description: Campo que causa la violación de unicidad (username, matnum o email).
         '500':
           description: Error interno del servidor
           content:
@@ -210,10 +218,12 @@ paths:
                   status_code:
                     type: integer
 
-  /api/teacher-signup:
+  /api/signup/teacher:
     post:
       summary: Registrar profesor
       description: Registra un nuevo profesor proporcionando los datos necesarios.
+      tags:
+        - Registro
       requestBody:
         required: true
         content:
@@ -316,10 +326,108 @@ paths:
                   status_code:
                     type: integer
 
-  /api/teacher-login:
+  /api/login/student:
+    post:
+      summary: Iniciar sesión de estudiante
+      description: Permite a un estudiante iniciar sesión proporcionando su número de matrícula y contraseña.
+      tags:
+        - Inicio de Sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                matnum:
+                  type: string
+                  description: Número de matrícula del estudiante.
+                password:
+                  type: string
+                  description: Contraseña del estudiante.
+              required:
+                - matnum
+                - password
+      responses:
+        '200':
+          description: Inicio de sesión exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                      face_img:
+                        type: string
+                        format: base64
+                        description: Imagen de rostro en base64.
+                  status_code:
+                    type: integer
+        '400':
+          description: Solicitud incorrecta, campos faltantes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '402':
+          description: Estudiante no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '403':
+          description: Contraseña incorrecta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/login/teacher:
     post:
       summary: Iniciar sesión de profesor
       description: Permite a un profesor iniciar sesión proporcionando su número de trabajo y contraseña.
+      tags:
+          - Inicio de Sesión
       requestBody:
         required: true
         content:
@@ -410,10 +518,12 @@ paths:
                   status_code:
                     type: integer
 
-  /api/verify-face:
+  /api/face/verify:
     post:
       summary: Verificar coincidencia de rostros
       description: Compara dos imágenes de rostros y determina si coinciden.
+      tags:
+        - Rostros
       requestBody:
         required: true
         content:
@@ -476,90 +586,12 @@ paths:
                   status_code:
                     type: integer
 
-  /api/check-duplicate:
-    post:
-      summary: Verificar duplicado de usuario
-      description: Verifica si un usuario ya existe en la base de datos basado en email, matnum o username.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                  description: Correo electrónico del usuario.
-                matnum:
-                  type: string
-                  description: Número de matrícula del usuario.
-                username:
-                  type: string
-                  description: Nombre de usuario.
-              required:
-                - email
-                - matnum
-                - username
-      responses:
-        '200':
-          description: No se encontraron duplicados
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  status_code:
-                    type: integer
-        '400':
-          description: Solicitud incorrecta, campos faltantes
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  error:
-                    type: string
-                  status_code:
-                    type: integer
-        '409':
-          description: Usuario ya registrado
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  error:
-                    type: string
-                  status_code:
-                    type: integer
-                  duplicate_field:
-                    type: string
-                    description: Campo que causa la violación de unicidad (username, matnum o email).
-        '500':
-          description: Error interno del servidor
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  error:
-                    type: string
-                  status_code:
-                    type: integer
-
-  /api/check-face:
+  /api/face/check-existing:
     post:
       summary: Verificar existencia de rostro
       description: Verifica si existe un rostro en la imagen proporcionada en formato base64.
+      tags:
+        - Rostros
       requestBody:
         required: true
         content:
@@ -605,6 +637,1057 @@ paths:
                     type: integer
         '500':
           description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/class/delete:
+    delete:
+      summary: Delete a class
+      description: Deletes a class based on the provided class_id.
+      tags:
+        - Clases
+      parameters:
+        - in: query
+          name: class_id
+          required: true
+          schema:
+            type: string
+          description: ID of the class to delete.
+      responses:
+        '200':
+          description: Class deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing class_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/class/add-student:
+    post:
+      summary: Add a student to a class
+      description: Registers a student into a class based on student_id and class_id.
+      tags:
+        - Clases
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                student_id:
+                  type: integer
+                  description: ID of the student.
+                class_id:
+                  type: integer
+                  description: ID of the class.
+              required:
+                - student_id
+                - class_id
+      responses:
+        '201':
+          description: Student added to class successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/class/delete-student:
+    delete:
+      summary: Delete a student from a class
+      description: Deletes a student from a class based on student_id and class_id.
+      tags:
+        - Clases
+      parameters:
+        - in: query
+          name: class_id
+          required: true
+          schema:
+            type: string
+          description: ID of the class.
+        - in: query
+          name: student_id
+          required: true
+          schema:
+            type: string
+          description: ID of the student.
+      responses:
+        '200':
+          description: Student deleted from class successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing class_id or student_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/class/register:
+    post:
+      summary: Register a new class
+      description: Registers a new class with the provided details.
+      tags:
+        - Clases
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                class_name:
+                  type: string
+                  description: Name of the class.
+                teacher_id:
+                  type: integer
+                  description: ID of the teacher.
+                group_num:
+                  type: integer
+                  description: Group number.
+                semester:
+                  type: string
+                  description: Semester.
+                class_room:
+                  type: string
+                  description: Class room.
+                start_time:
+                  type: string
+                  description: Start time.
+                end_time:
+                  type: string
+                  description: End time.
+                week_days:
+                  type: string
+                  description: Week days.
+              required:
+                - class_name
+                - teacher_id
+                - group_num
+                - semester
+      responses:
+        '201':
+          description: Class registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/class/exams:
+    get:
+      summary: Retrieve exams for a class
+      description: Retrieves all exams for a class based on class_id.
+      tags:
+          - Clases
+      parameters:
+        - in: query
+          name: class_id
+          required: true
+          schema:
+            type: string
+          description: ID of the class.
+      responses:
+        '200':
+          description: Exams retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing class_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/class/students:
+    get:
+      summary: Retrieve students for a class
+      description: Retrieves all students for a class based on class_id.
+      tags:
+        - Clases
+      parameters:
+        - in: query
+          name: class_id
+          required: true
+          schema:
+            type: string
+          description: ID of the class.
+      responses:
+        '200':
+          description: Students retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing class_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/student/classes:
+    get:
+      summary: Retrieve classes for a student
+      description: Retrieves all classes for a student based on student_id.
+      tags:
+        - Estudiantes
+      parameters:
+        - in: query
+          name: student_id
+          required: true
+          schema:
+            type: string
+          description: ID of the student.
+      responses:
+        '200':
+          description: Classes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing student_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/teacher/classes:
+    get:
+      summary: Retrieve classes for a teacher
+      description: Retrieves all classes for a teacher based on teacher_id.
+      tags:
+        - Profesores
+      parameters:
+        - in: query
+          name: teacher_id
+          required: true
+          schema:
+            type: string
+          description: ID of the teacher.
+      responses:
+        '200':
+          description: Classes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing teacher_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/class/update:
+    put:
+      summary: Update a class
+      description: Updates a class with the provided details.
+      tags:
+        - Clases
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                class_id:
+                  type: integer
+                  description: ID of the class.
+                class_name:
+                  type: string
+                  description: Name of the class.
+                teacher_id:
+                  type: integer
+                  description: ID of the teacher.
+                group_num:
+                  type: integer
+                  description: Group number.
+                semester:
+                  type: string
+                  description: Semester.
+                class_room:
+                  type: string
+                  description: Class room.
+                start_time:
+                  type: string
+                  description: Start time.
+                end_time:
+                  type: string
+                  description: End time.
+                week_days:
+                  type: string
+                  description: Week days.
+              required:
+                - class_id
+      responses:
+        '200':
+          description: Class updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/exam/create:
+    post:
+      summary: Create a new exam
+      description: Creates a new exam with the provided details.
+      tags:
+        - Exámenes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exam_name:
+                  type: string
+                  description: Name of the exam.
+                class_id:
+                  type: integer
+                  description: ID of the class.
+                date:
+                  type: string
+                  description: Date of the exam.
+                class_room:
+                  type: string
+                  description: Class room.
+                hour:
+                  type: string
+                  description: Hour of the exam.
+              required:
+                - exam_name
+                - class_id
+      responses:
+        '201':
+          description: Exam created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/exam/delete:
+    delete:
+      summary: Delete an exam
+      description: Deletes an exam based on exam_id.
+      tags:
+        - Exámenes
+      parameters:
+        - in: query
+          name: exam_id
+          required: true
+          schema:
+            type: string
+          description: ID of the exam to delete.
+      responses:
+        '200':
+          description: Exam deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing exam_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/exam/results:
+    get:
+      summary: Retrieve exam results
+      description: Retrieves all results for an exam based on exam_id.
+      tags:
+        - Exámenes
+      parameters:
+        - in: query
+          name: exam_id
+          required: true
+          schema:
+            type: string
+          description: ID of the exam.
+      responses:
+        '200':
+          description: Exam results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing exam_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/exam/modify-result:
+    post:
+      summary: Modify exam results
+      description: Modifies multiple exam results with the provided details.
+      tags:
+        - Exámenes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                results:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      result_id:
+                        type: integer
+                        description: ID of the exam result (optional for new results).
+                      score:
+                        type: number
+                        format: float
+                        description: Score of the exam. Must be a number between 0 and 100.
+                      student_id:
+                        type: integer
+                        description: ID of the student (required for new results).
+                      exam_id:
+                        type: integer
+                        description: ID of the exam (required for new results).
+                      class_id:
+                        type: integer
+                        description: ID of the class (required for new results).
+                  required:
+                    - score
+      responses:
+        '200':
+          description: All exam results processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields or invalid score value. Score must be a number between 0 and 100.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/exam/update:
+    put:
+      summary: Update an exam
+      description: Updates an exam with the provided details.
+      tags:
+        - Exámenes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exam_id:
+                  type: integer
+                  description: ID of the exam.
+                exam_name:
+                  type: string
+                  description: Name of the exam.
+                class_id:
+                  type: integer
+                  description: ID of the class.
+                date:
+                  type: string
+                  description: Date of the exam.
+                class_room:
+                  type: string
+                  description: Class room.
+                hour:
+                  type: string
+                  description: Hour of the exam.
+              required:
+                - exam_id
+      responses:
+        '200':
+          description: Exam updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/student/teachers:
+      get:
+        summary: Retrieve teachers for a student
+        description: Retrieve the list of teachers and their classes for a given student.
+        tags:
+          - Estudiantes
+        parameters:
+          - in: query
+            name: student_id
+            required: true
+            schema:
+              type: string
+            description: The ID of the student.
+        responses:
+          '200':
+            description: A list of teachers and their classes.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          email:
+                            type: string
+                          class_name:
+                            type: array
+                            items:
+                              type: string
+                    status_code:
+                      type: integer
+          '400':
+            description: Missing or invalid student_id parameter.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    error:
+                      type: string
+                    status_code:
+                      type: integer
+          '500':
+            description: Internal server error.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    error:
+                      type: string
+                    status_code:
+                      type: integer
+
+  /api/student/exams:
+    get:
+      summary: Retrieve exams for a student
+      description: Retrieves all exams for a student based on student_id.
+      tags:
+        - Estudiantes
+      parameters:
+        - in: query
+          name: student_id
+          required: true
+          schema:
+            type: string
+          description: The ID of the student.
+      responses:
+        '200':
+          description: Exams retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        exam_id:
+                          type: integer
+                        exam_name:
+                          type: string
+                        class_id:
+                          type: integer
+                        date:
+                          type: string
+                          format: date
+                        class_room:
+                          type: string
+                        hour:
+                          type: string
+                          format: time
+                        score:
+                          type: number
+                          format: float
+                        class_name:
+                          type: string
+                        teacher_name:
+                          type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing or invalid student_id parameter.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error.
           content:
             application/json:
               schema:

@@ -9,12 +9,12 @@ db = LoginSignupDatabase()
 BAD_REQUEST_MSG = 'All fields must be present.'
 
 
-@teacher_signup_bp.route('/teacher-signup', methods=['POST'])
+@teacher_signup_bp.route('/signup/teacher', methods=['POST'])
 def teacher_signup():
     try:
         body = request.get_json()
         print("Received request body:", body)  # Debugging print
-        required_fields = ['name', 'username', 'age', 'faculty', 'worknum', 'password', 'face_img', 'email']
+        required_fields = ['name', 'username', 'birthdate', 'faculty', 'worknum', 'password', 'face_img', 'email']
 
         # Verificar campos obligatorios
         for field in required_fields:
@@ -43,7 +43,7 @@ def teacher_signup():
 
         return jsonify(LoginSignupDatabase.generate_response(
             success=True,
-            data={'message': 'User registered successfully'},
+            data={'message': 'User registered successfully', 'teacher_id': result['teacher_id']},
             status_code=201
         )), 201
 

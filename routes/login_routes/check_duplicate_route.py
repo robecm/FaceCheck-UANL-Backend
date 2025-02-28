@@ -4,7 +4,7 @@ from modules.database_modules.login_signup_database import LoginSignupDatabase
 check_duplicate_bp = Blueprint('check_duplicate', __name__)
 db = LoginSignupDatabase()
 
-@check_duplicate_bp.route('/check-duplicate', methods=['POST'])
+@check_duplicate_bp.route('/signup/student-duplicate', methods=['POST'])
 def check_duplicate():
     try:
         body = request.get_json()

@@ -12,7 +12,7 @@ INCORRECT_PASSWORD_MSG = 'Incorrect password.'
 SUCCESSFUL_LOGIN_MSG = 'Successful login.'
 
 
-@student_login_bp.route('/student-login', methods=['POST'])
+@student_login_bp.route('/login/student', methods=['POST'])
 def student_login():
     try:
         # Obtener los datos del JSON enviado en la solicitud
@@ -57,7 +57,6 @@ def student_login():
         # Comparar la contraseña introducida con la almacenada en la base de datos
         hashed_password = user_registered_data['data']['password']
         face_img_base64 = user_registered_data['data']['face_img']
-        print("Contraseña almacenada:", hashed_password)
 
         # Verificar si la contraseña ingresada coincide
         if bcrypt.checkpw(user_entered_data['password'].encode('utf-8'), hashed_password.encode('utf-8')):
@@ -65,7 +64,7 @@ def student_login():
             print('Face image string:', face_img_base64_str[:100])
             return jsonify(LoginSignupDatabase.generate_response(
                 success=True,
-                data={'message': SUCCESSFUL_LOGIN_MSG, 'face_img': face_img_base64_str},
+                data={'message': SUCCESSFUL_LOGIN_MSG, 'face_img': face_img_base64_str, 'student_id': user_registered_data['data']['student_id']},
                 status_code=200
             )), 200
         else:

@@ -6,7 +6,7 @@ retrieve_exam_results_bp = Blueprint('retrieve_exam_results', __name__)
 db = ExamsDatabase()
 
 
-@retrieve_exam_results_bp.route('/retrieve-exam-results', methods=['GET'])
+@retrieve_exam_results_bp.route('/exam/results', methods=['GET'])
 def retrieve_exam_results():
     try:
         exam_id = request.args.get('exam_id')

@@ -6,13 +6,13 @@ student_class_bp = Blueprint('student_class', __name__)
 db = ClassesDatabase()
 
 
-@student_class_bp.route('/student-class', methods=['POST'])
+@student_class_bp.route('/class/add-student', methods=['POST'])
 def student_class():
     try:
         print('Request received') # Debugging print
         body = request.form if request.form else request.get_json()
         print('Received request body:', body) # Debugging print
-        required_fields = ['student_id', 'class_id']
+        required_fields = ['matnum', 'class_id']
 
         # Validate that all required fields are present
         for field in required_fields:

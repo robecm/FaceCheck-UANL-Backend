@@ -11,7 +11,7 @@ def decode_images(cap_frame_base64, ref_frame_base64):
     return cap_frame, ref_frame
 
 
-@verify_face_bp.route('/verify-face', methods=['POST'])
+@verify_face_bp.route('/face/verify', methods=['POST'])
 def verify_face():
     try:
         body = request.get_json()
@@ -20,7 +20,7 @@ def verify_face():
         ref_frame_base64 = body.get('ref_frame')
 
         # Debugging prints for the first 100 characters of the base64 strings
-        print("cap_frame_base64 (first 100 chars):", cap_frame_base64[:100])
+        print("cap_frame_base64 (first 100 chars):", cap_frame_base64)
         print("ref_frame_base64 (first 100 chars):", ref_frame_base64[:100])
 
         if not (cap_frame_base64 and ref_frame_base64):

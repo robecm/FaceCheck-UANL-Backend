@@ -6,7 +6,7 @@ create_exam_bp = Blueprint('create_exam', __name__)
 db = ExamsDatabase()
 
 
-@create_exam_bp.route('/create-exam', methods=['POST'])
+@create_exam_bp.route('/exam/create', methods=['POST'])
 def create_exam():
     try:
         body = request.form if request.form else request.get_json()

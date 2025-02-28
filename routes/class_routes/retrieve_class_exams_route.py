@@ -6,7 +6,7 @@ retrieve_class_exams_bp = Blueprint('retrieve_class_exams', __name__)
 db = ClassesDatabase()
 
 
-@retrieve_class_exams_bp.route('/retrieve-class-exams', methods=['GET'])
+@retrieve_class_exams_bp.route('/class/exams', methods=['GET'])
 def retrieve_class_exams():
     try:
         class_id = request.args.get('class_id')

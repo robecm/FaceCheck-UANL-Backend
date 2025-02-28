@@ -7,3 +7,4 @@
 /.idea/
 /static/.ngrok.exe.old
 /modules/database_modules/credentials.JSON
+/config/api_key.txt
