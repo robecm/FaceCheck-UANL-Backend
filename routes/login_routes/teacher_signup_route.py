@@ -14,7 +14,7 @@ def teacher_signup():
     try:
         body = request.get_json()
         print("Received request body:", body)  # Debugging print
-        required_fields = ['name', 'username', 'age', 'faculty', 'worknum', 'password', 'face_img', 'email']
+        required_fields = ['name', 'username', 'birthdate', 'faculty', 'worknum', 'password', 'face_img', 'email']
 
         # Verificar campos obligatorios
         for field in required_fields:

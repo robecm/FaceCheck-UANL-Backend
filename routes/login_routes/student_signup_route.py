@@ -11,7 +11,7 @@ def student_signup():
     try:
         body = request.form if request.form else request.get_json()
         print("Received request body:", body)  # Debugging print
-        required_fields = ['name', 'username', 'age', 'faculty', 'matnum', 'password', 'face_img', 'email']
+        required_fields = ['name', 'username', 'birthdate', 'faculty', 'matnum', 'password', 'face_img', 'email']
 
         # Verificar campos obligatorios
         for field in required_fields:

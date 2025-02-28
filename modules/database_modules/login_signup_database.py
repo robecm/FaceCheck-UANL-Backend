@@ -35,7 +35,7 @@ class LoginSignupDatabase:
 
     # Method to sign up a new student (split image storage)
     def student_signup(self, **kwargs):
-        user_fields = ['name', 'username', 'age', 'faculty', 'matnum', 'password', 'email']
+        user_fields = ['name', 'username', 'birthdate', 'faculty', 'matnum', 'password', 'email']
         if not all(field in kwargs for field in user_fields):
             return self.generate_response(success=False, error='Missing required fields', status_code=400)
 
@@ -48,8 +48,8 @@ class LoginSignupDatabase:
 
                 # Insert the new user without face_img
                 query = """
-                    INSERT INTO users_students (name, username, age, faculty, matnum, password, email)
-                    VALUES (%(name)s, %(username)s, %(age)s, %(faculty)s, %(matnum)s, %(password)s, %(email)s)
+                    INSERT INTO users_students (name, username, birthdate, faculty, matnum, password, email)
+                    VALUES (%(name)s, %(username)s, %(birthdate)s, %(faculty)s, %(matnum)s, %(password)s, %(email)s)
                     RETURNING id;
                 """
                 cur.execute(query, kwargs)
@@ -90,7 +90,7 @@ class LoginSignupDatabase:
                     duplicate_field = next((field for field in user_fields if field in error_message), None)
                     return self.generate_response(
                         success=False,
-                        error=f'The {duplicate_field} already exists. Please choose a different value.',
+                        error=f'The {duplicate_field} is already registered. Please choose a different value.',
                         status_code=409,
                         duplicate_field=duplicate_field
                     )
@@ -99,7 +99,7 @@ class LoginSignupDatabase:
 
     # Method to sign up a new teacher
     def teacher_signup(self, **kwargs):
-        user_fields = ['name', 'username', 'age', 'faculty', 'worknum', 'password', 'email']
+        user_fields = ['name', 'username', 'birthdate', 'faculty', 'worknum', 'password', 'email']
         if not all(field in kwargs for field in user_fields):
             return self.generate_response(success=False, error='Missing required fields', status_code=400)
 
@@ -112,8 +112,8 @@ class LoginSignupDatabase:
 
                 # Insert the new teacher without face_img
                 query = """
-                    INSERT INTO users_teachers (name, username, age, faculty, worknum, password, email)
-                    VALUES (%(name)s, %(username)s, %(age)s, %(faculty)s, %(worknum)s, %(password)s, %(email)s)
+                    INSERT INTO users_teachers (name, username, birthdate, faculty, worknum, password, email)
+                    VALUES (%(name)s, %(username)s, %(birthdate)s, %(faculty)s, %(worknum)s, %(password)s, %(email)s)
                     RETURNING id;
                 """
                 cur.execute(query, kwargs)
@@ -152,7 +152,7 @@ class LoginSignupDatabase:
                     duplicate_field = next((field for field in user_fields if field in error_message), None)
                     return self.generate_response(
                         success=False,
-                        error=f'The {duplicate_field} already exists. Please choose a different value.',
+                        error=f'The {duplicate_field} is already registered. Please choose a different value.',
                         status_code=409,
                         duplicate_field=duplicate_field
                     )
@@ -204,7 +204,7 @@ class LoginSignupDatabase:
             try:
                 cur = conn.cursor()
                 query = """
-                    SELECT u.password, f.face_img
+                    SELECT u.password, f.face_img, u.id
                     FROM users_teachers u
                     LEFT JOIN faces_teachers f ON u.id = f.teacher_id
                     WHERE u.worknum = %s
@@ -217,6 +217,7 @@ class LoginSignupDatabase:
                     print("User found:", result)  # Debugging print
                     password = result[0]
                     face_img_memoryview = result[1]
+                    teacher_id = result[2]
                     print("Face image:", face_img_memoryview[:100])  # Debugging print
                     face_img_base64 = base64.b64encode(face_img_memoryview).decode('utf-8')
                     print("Face image base64:", face_img_base64[:100])  # Debugging print
@@ -224,7 +225,7 @@ class LoginSignupDatabase:
                     print("Face image decoded:", face_img_decoded[:100])  # Debugging print
                     return self.generate_response(
                         success=True,
-                        data={'password': password, 'face_img': face_img_decoded},
+                        data={'password': password, 'face_img': face_img_decoded, 'teacher_id': teacher_id},
                         status_code=200
                     )
                 else:
