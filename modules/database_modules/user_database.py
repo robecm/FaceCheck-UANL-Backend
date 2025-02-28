@@ -36,6 +36,7 @@ class UserDatabase:
     def __init__(self, credentials_path='modules/database_modules/credentials.json'):
         self.credentials = load_db_credentials(credentials_path)
 
+    # Python
     def retrieve_user_info(self, user_id, user_type: str):
         if not user_id:
             return self.generate_response(success=False, error='User ID must be provided', status_code=400)
@@ -49,29 +50,32 @@ class UserDatabase:
                     SELECT name, username, faculty, matnum, email, birthdate
                     FROM users_students
                     WHERE id = %s;
-                """
-
+                    """
                 elif user_type == 'teacher':
                     query = """
                     SELECT name, username, faculty, worknum, email, birthdate
                     FROM users_teachers
                     WHERE id = %s;
-                """
+                    """
 
                 cur.execute(query, (user_id,))
-                user_data = cur.fetchone()
+                result = cur.fetchone()
                 cur.close()
-                user_data_dict = dict(user_data) if user_data else {}
-                return self.generate_response(success=True, data=user_data_dict, status_code=200, error=None)
+
+                user_data = dict(result) if result else {}
+                # Format birthdate to DD-MM-YYYY if it exists
+                if user_data.get("birthdate"):
+                    user_data["birthdate"] = user_data["birthdate"].strftime("%d-%m-%Y")
+
+                return self.generate_response(success=True, data=user_data, status_code=200, error=None)
 
             except psycopg2.Error as e:
                 error_msg = e.pgerror if e.pgerror else str(e)
                 print(f'Error retrieving user information: {error_msg}')
                 return self.generate_response(success=False, error=error_msg, status_code=500, error_code=e.pgcode)
 
-
     def modify_user_info(self, user_id, user_type: str, **kwargs):
-        user_fields = ['name', 'username', 'password', 'email', 'matnum', 'worknum','faculty', 'birthdate']
+        user_fields = ['name', 'username', 'password', 'email', 'matnum', 'worknum', 'faculty', 'birthdate']
 
         if not user_id:
             return self.generate_response(success=False, error='User ID must be provided', status_code=400)
@@ -79,6 +83,10 @@ class UserDatabase:
         filtered_kwargs = {field: kwargs[field] for field in user_fields if field in kwargs}
         if not filtered_kwargs:
             return self.generate_response(success=False, error='No fields to update', status_code=400)
+
+        # Handle empty birthdate - convert to None for SQL NULL
+        if 'birthdate' in filtered_kwargs and filtered_kwargs['birthdate'] == '':
+            filtered_kwargs['birthdate'] = None
 
         # Validate required fields aren't being set to NULL or empty string
         non_nullable_fields = ['name', 'username', 'email']
@@ -98,15 +106,15 @@ class UserDatabase:
             worknum = str(filtered_kwargs['worknum'])
             if not (worknum.isdigit() and len(worknum) == 6):
                 return self.generate_response(success=False,
-                                             error="Work number must be a 6-digit integer",
-                                             status_code=400)
+                                              error="Work number must be a 6-digit integer",
+                                              status_code=400)
 
         if 'matnum' in filtered_kwargs and user_type == 'student':
             matnum = str(filtered_kwargs['matnum'])
             if not (matnum.isdigit() and len(matnum) == 7):
                 return self.generate_response(success=False,
-                                             error="Matriculation number must be a 7-digit integer",
-                                             status_code=400)
+                                              error="Matriculation number must be a 7-digit integer",
+                                              status_code=400)
 
         with db_connection(self.credentials) as conn:
             try:
@@ -152,8 +160,8 @@ class UserDatabase:
 
                 if not set_items:
                     return self.generate_response(success=False,
-                                                 error="No applicable fields to update",
-                                                 status_code=400)
+                                                  error="No applicable fields to update",
+                                                  status_code=400)
 
                 set_clause = ", ".join(set_items)
                 params.append(user_id)  # Add user_id for WHERE clause
@@ -167,21 +175,21 @@ class UserDatabase:
 
                 if rows_affected == 0:
                     return self.generate_response(success=False,
-                                                 error=f"No {user_type} found with ID {user_id}",
-                                                 status_code=404)
+                                                  error=f"No {user_type} found with ID {user_id}",
+                                                  status_code=404)
 
                 return self.generate_response(success=True,
-                                             data={'message': f"{user_type.capitalize()} information updated successfully"},
-                                             status_code=200)
+                                              data={'message': f"{user_type.capitalize()} information updated successfully"},
+                                              status_code=200)
 
             except psycopg2.Error as e:
                 conn.rollback()
                 error_msg = e.pgerror if e.pgerror else str(e)
                 print(f'Error updating user information: {error_msg}')
                 return self.generate_response(success=False,
-                                             error=error_msg,
-                                             status_code=500,
-                                             error_code=e.pgcode)
+                                              error=error_msg,
+                                              status_code=500,
+                                              error_code=e.pgcode)
 
     # Private method to generate a consistent JSON response
     @staticmethod
