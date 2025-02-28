@@ -37,8 +37,6 @@ class StudentDatabase:
     def __init__(self, credentials_path='modules/database_modules/credentials.json'):
         self.credentials = load_db_credentials(credentials_path)
 
-    # TODO retrieve_student_data method
-
     def retrieve_student_teachers(self, student_id):
         if not student_id:
             return self.generate_response(success=False, error='Student ID must be provided', status_code=400)
