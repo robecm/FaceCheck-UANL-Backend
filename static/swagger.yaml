@@ -24,7 +24,8 @@ tags:
     description: Operaciones relacionadas con las clases.
   - name: Exámenes
     description: Operaciones relacionadas con los exámenes.
-
+  - name: Usuarios
+    description: Operaciones relacionadas con la información del usuario.
 
 paths:
 
@@ -1688,6 +1689,174 @@ paths:
                     type: integer
         '500':
           description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/user/info:
+    get:
+      summary: Retrieve user information
+      description: Retrieves information for a specific user based on user_id and user_type.
+      tags:
+        - Usuarios
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: integer
+          description: ID of the user to retrieve information for.
+        - in: query
+          name: user_type
+          required: true
+          schema:
+            type: string
+            enum: [student, teacher]
+          description: Type of the user (student or teacher).
+      responses:
+        '200':
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    description: User information fields
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required parameters or invalid user type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/user/modify:
+    put:
+      summary: Modify user information
+      description: Updates information for a specific user based on user_id and user_type.
+      tags:
+        - Usuarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  description: ID of the user to modify.
+                user_type:
+                  type: string
+                  enum: [student, teacher]
+                  description: Type of the user (student or teacher).
+                name:
+                  type: string
+                  description: Full name of the user.
+                username:
+                  type: string
+                  description: Username for the user.
+                password:
+                  type: string
+                  description: Password for the user.
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the user.
+                matnum:
+                  type: string
+                  description: Matriculation number (7-digit number, only for students).
+                worknum:
+                  type: string
+                  description: Work number (6-digit number, only for teachers).
+                faculty:
+                  type: string
+                  description: Faculty the user belongs to.
+                birthdate:
+                  type: string
+                  format: date
+                  description: Birth date of the user.
+              required:
+                - user_id
+                - user_type
+      responses:
+        '200':
+          description: User information updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields, validation errors, or duplicate values
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:
