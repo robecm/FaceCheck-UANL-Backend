@@ -81,8 +81,7 @@ class AssignmentsDatabase:
                 error_message = e.pgerror if e.pgerror else str(e)
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
-    # Update assignment data
-    # Allowed fields: title, description, due_date, class_id
+
     def update_assignment(self, assignment_id, **kwargs):
         if not assignment_id:
             return self.generate_response(success=False, error='The assignment_id must be provided.', status_code=400)
@@ -95,19 +94,45 @@ class AssignmentsDatabase:
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor()
-                # Verify that the assignment exists
-                check_query = "SELECT 1 FROM assignments WHERE assignment_id = %s;"
-                cur.execute(check_query, (assignment_id,))
-                if not cur.fetchone():
+                # Verify that the assignment exists and retrieve current values
+                cur.execute("SELECT title, due_date, class_id FROM assignments WHERE assignment_id = %s;", (assignment_id,))
+                record = cur.fetchone()
+                if not record:
+                    cur.close()
                     return self.generate_response(success=False, error='Assignment not found.', status_code=404)
+
+                current_title, current_due_date, current_class_id = record
+                # Determine new values after update, using provided values or current ones
+                new_title = filtered_kwargs.get('title', current_title)
+                new_due_date = filtered_kwargs.get('due_date', current_due_date)
+
+                # Check that the updated assignment doesn't match another existing one (title and due_date)
+                check_query = """
+                    SELECT 1 FROM assignments
+                    WHERE title = %(title)s AND due_date = %(due_date)s
+                      AND assignment_id != %(assignment_id)s;
+                """
+                cur.execute(check_query, {
+                    'title': new_title,
+                    'due_date': new_due_date,
+                    'assignment_id': assignment_id
+                })
+                if cur.fetchone():
+                    cur.close()
+                    return self.generate_response(
+                        success=False,
+                        error='An assignment with the same title and due date already exists.',
+                        status_code=400
+                    )
 
                 # If the class is being updated, verify that the new class exists
                 if 'class_id' in filtered_kwargs:
-                    check_class_query = "SELECT 1 FROM classes WHERE class_id = %s;"
-                    cur.execute(check_class_query, (filtered_kwargs['class_id'],))
+                    cur.execute("SELECT 1 FROM classes WHERE class_id = %s;", (filtered_kwargs['class_id'],))
                     if not cur.fetchone():
+                        cur.close()
                         return self.generate_response(success=False, error='New class not found.', status_code=404)
 
+                # Construct the update query
                 set_clause = ', '.join([f'{field} = %({field})s' for field in filtered_kwargs.keys()])
                 query = f"""
                     UPDATE assignments
