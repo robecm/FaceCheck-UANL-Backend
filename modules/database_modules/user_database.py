@@ -36,7 +36,6 @@ class UserDatabase:
     def __init__(self, credentials_path='modules/database_modules/credentials.json'):
         self.credentials = load_db_credentials(credentials_path)
 
-    # Python
     def retrieve_user_info(self, user_id, user_type: str):
         if not user_id:
             return self.generate_response(success=False, error='User ID must be provided', status_code=400)

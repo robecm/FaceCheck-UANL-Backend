@@ -23,6 +23,7 @@ from routes.student_routes.retrieve_student_teachers_route import retrieve_stude
 from routes.student_routes.retrieve_student_exams_route import retrieve_student_exams_bp
 from routes.user_info_routes.retrieve_user_info_route import retrieve_user_info_bp
 from routes.user_info_routes.modify_user_info_route import modify_user_info_bp
+from routes.assignment_routes.create_assignment_route import create_assignment_bp
 
 blueprints_list = [
     (verify_face_bp, '/api'),
@@ -49,5 +50,6 @@ blueprints_list = [
     (retrieve_student_teachers_bp, '/api'),
     (retrieve_student_exams_bp, '/api'),
     (retrieve_user_info_bp, '/api'),
-    (modify_user_info_bp, '/api')
+    (modify_user_info_bp, '/api'),
+    (create_assignment_bp, '/api')
 ]
