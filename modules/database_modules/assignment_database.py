@@ -248,36 +248,35 @@ class AssignmentsDatabase:
                                               error_code=e.pgcode)
 
 
-    def modify_assignment_evidence(self, evidence_id, **kwargs):
+    def remove_assignment_evidence(self, evidence_id):
         if not evidence_id:
             return self.generate_response(success=False, error='The evidence_id must be provided.', status_code=400)
-        if 'file_data' not in kwargs:
-            return self.generate_response(success=False, error='No file_data provided for modification.', status_code=400)
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor()
+                # Verify that the evidence exists
                 cur.execute("SELECT 1 FROM assignments_evidences WHERE evidence_id = %s;", (evidence_id,))
                 if not cur.fetchone():
                     return self.generate_response(success=False, error='Evidence not found.', status_code=404)
+                # Delete the evidence record completely
                 query = """
-                    UPDATE assignments_evidences
-                    SET file_data = %(file_data)s
+                    DELETE FROM assignments_evidences
                     WHERE evidence_id = %(evidence_id)s
                     RETURNING evidence_id;
                 """
-                cur.execute(query, {'file_data': kwargs['file_data'], 'evidence_id': evidence_id})
-                updated_id = cur.fetchone()[0]
+                cur.execute(query, {'evidence_id': evidence_id})
+                deleted_id = cur.fetchone()[0]
                 conn.commit()
                 cur.close()
                 return self.generate_response(success=True, error=None, status_code=200,
-                                              data={'evidence_id': updated_id})
+                                             data={'evidence_id': deleted_id})
             except psycopg2.Error as e:
                 conn.rollback()
                 error_message = e.pgerror if e.pgerror else str(e)
                 return self.generate_response(success=False,
-                                              error=error_message,
-                                              status_code=500,
-                                              error_code=e.pgcode)
+                                             error=error_message,
+                                             status_code=500,
+                                             error_code=e.pgcode)
 
 
     def grade_assignment_evidence(self, evidence_id, grade):
@@ -333,27 +332,6 @@ class AssignmentsDatabase:
                                               status_code=500,
                                               error_code=e.pgcode)
 
-    # Retrieve all evidences associated with an assignment (unchanged)
-    def get_assignment_evidences(self, assignment_id):
-        if not assignment_id:
-            return self.generate_response(success=False, error='The assignment_id must be provided.', status_code=400)
-        with db_connection(self.credentials) as conn:
-            try:
-                cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-                cur.execute("SELECT 1 FROM assignments WHERE assignment_id = %s;", (assignment_id,))
-                if not cur.fetchone():
-                    return self.generate_response(success=False, error='Assignment not found.', status_code=404)
-                query = "SELECT * FROM assignments_evidences WHERE assignment_id = %s;"
-                cur.execute(query, (assignment_id,))
-                evidences = cur.fetchall()
-                cur.close()
-                return self.generate_response(success=True, error=None, status_code=200, data=evidences)
-            except psycopg2.Error as e:
-                error_message = e.pgerror if e.pgerror else str(e)
-                return self.generate_response(success=False,
-                                              error=error_message,
-                                              status_code=500,
-                                              error_code=e.pgcode)
 
     # Private method to generate consistent JSON responses
     @staticmethod
