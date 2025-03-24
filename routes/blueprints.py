@@ -25,6 +25,8 @@ from routes.user_info_routes.retrieve_user_info_route import retrieve_user_info_
 from routes.user_info_routes.modify_user_info_route import modify_user_info_bp
 from routes.assignment_routes.create_assignment_route import create_assignment_bp
 from routes.assignment_routes.update_assignment_route import update_assignment_bp
+from routes.assignment_routes.delete_assignment_route import delete_assignment_bp
+from routes.class_routes.retrieve_class_assignments import retrieve_class_assignments_bp
 
 blueprints_list = [
     (verify_face_bp, '/api'),
@@ -53,5 +55,7 @@ blueprints_list = [
     (retrieve_user_info_bp, '/api'),
     (modify_user_info_bp, '/api'),
     (create_assignment_bp, '/api'),
-    (update_assignment_bp, '/api')
+    (update_assignment_bp, '/api'),
+    (delete_assignment_bp, '/api'),
+    (retrieve_class_assignments_bp, '/api'),
 ]

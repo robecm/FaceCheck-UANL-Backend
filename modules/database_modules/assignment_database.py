@@ -181,7 +181,7 @@ class AssignmentsDatabase:
                 error_message = e.pgerror if e.pgerror else str(e)
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
-    # Retrieve all assignments for a class
+
     def get_assignments_by_class(self, class_id):
         if not class_id:
             return self.generate_response(success=False, error='The class_id must be provided.', status_code=400)
@@ -204,10 +204,6 @@ class AssignmentsDatabase:
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
     # Operations for the assignments_evidences table
-
-    # Add an assignment evidence
-    # Required fields: assignment_id, student_id, class_id, pdf_data
-    # Optional field: grade
     def add_assignment_evidence(self, **kwargs):
         evidence_fields = ['assignment_id', 'student_id', 'class_id', 'pdf_data']
         optional_fields = ['grade']
