@@ -1,23 +1,24 @@
 from flask import Blueprint, request, jsonify
 from modules.database_modules.assignment_database import AssignmentsDatabase
 
-retrieve_class_assignments_bp = Blueprint('retrieve_class_assignments', __name__)
+retrieve_teacher_assignments_bp = Blueprint('retrieve_teacher_assignments', __name__)
 db = AssignmentsDatabase()
 
 
-@retrieve_class_assignments_bp.route('/class/assignments', methods=['GET'])
-def retrieve_class_assignments():
+@retrieve_teacher_assignments_bp.route('/teacher/assignments', methods=['GET'])
+def retrieve_teacher_assignments():
     try:
-        class_id = request.args.get('class_id')
-        print("Received class ID:", class_id)  # Debugging print
-        if not class_id:
+        teacher_id = request.args.get('teacher_id')
+
+        if not teacher_id:
             return jsonify(AssignmentsDatabase.generate_response(
                 success=False,
-                error='Missing class_id parameter',
+                error='Missing teacher_id parameter',
                 status_code=400
             )), 400
 
-        result = db.retrieve_class_assignments(class_id)
+        result = db.retrieve_teacher_assignments(teacher_id)
+
         if not result['success']:
             return jsonify(AssignmentsDatabase.generate_response(
                 success=False,

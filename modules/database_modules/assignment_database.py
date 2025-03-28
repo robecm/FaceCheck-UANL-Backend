@@ -182,7 +182,7 @@ class AssignmentsDatabase:
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
 
-    def get_assignments_by_class(self, class_id):
+    def retrieve_class_assignments(self, class_id):
         if not class_id:
             return self.generate_response(success=False, error='The class_id must be provided.', status_code=400)
         with db_connection(self.credentials) as conn:
@@ -203,6 +203,82 @@ class AssignmentsDatabase:
                 error_message = e.pgerror if e.pgerror else str(e)
                 return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
+
+    def retrieve_student_assignments(self, student_id):
+        if not student_id:
+            return self.generate_response(success=False, error='Student ID must be provided', status_code=400)
+
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+                # Check if student exists
+                check_query = """
+                    SELECT 1 FROM users_students
+                    WHERE id = %s;
+                """
+                cur.execute(check_query, (student_id,))
+                if not cur.fetchone():
+                    return self.generate_response(success=False, error='Student not found', status_code=404)
+
+                # Retrieve assignments for classes the student is enrolled in
+                query = """
+                    SELECT a.assignment_id, a.title, a.description, a.due_date, 
+                           a.class_id, c.class_name, c.semester, ut.name as teacher_name,
+                           (SELECT COUNT(*) > 0 FROM assignments_evidences 
+                            WHERE assignment_id = a.assignment_id AND student_id = %s) as submitted
+                    FROM assignments a
+                    JOIN classes c ON a.class_id = c.class_id
+                    JOIN users_teachers ut ON c.teacher_id = ut.id
+                    JOIN classes_students cs ON c.class_id = cs.class_id
+                    WHERE cs.student_id = %s
+                    ORDER BY a.due_date DESC;
+                """
+                cur.execute(query, (student_id, student_id))
+                assignments = cur.fetchall()
+
+                return self.generate_response(success=True, error=None, status_code=200, data=assignments)
+
+            except psycopg2.Error as e:
+                error_message = e.pgerror if e.pgerror else str(e)
+                return self.generate_response(success=False, error=error_message, status_code=500)
+
+    def retrieve_teacher_assignments(self, teacher_id):
+        if not teacher_id:
+            return self.generate_response(success=False, error='Teacher ID must be provided', status_code=400)
+
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+                # Check if teacher exists
+                check_query = """
+                    SELECT 1 FROM users_teachers
+                    WHERE id = %s;
+                """
+                cur.execute(check_query, (teacher_id,))
+                if not cur.fetchone():
+                    return self.generate_response(success=False, error='Teacher not found', status_code=404)
+
+                # Retrieve assignments for classes taught by the teacher
+                query = """
+                    SELECT a.assignment_id, a.title, a.description, a.due_date, 
+                           a.class_id, c.class_name, c.semester, c.group_num,
+                           (SELECT COUNT(*) FROM assignments_evidences
+                            WHERE assignment_id = a.assignment_id) as submissions_count
+                    FROM assignments a
+                    JOIN classes c ON a.class_id = c.class_id
+                    WHERE c.teacher_id = %s
+                    ORDER BY a.due_date DESC;
+                """
+                cur.execute(query, (teacher_id,))
+                assignments = cur.fetchall()
+
+                return self.generate_response(success=True, error=None, status_code=200, data=assignments)
+
+            except psycopg2.Error as e:
+                error_message = e.pgerror if e.pgerror else str(e)
+                return self.generate_response(success=False, error=error_message, status_code=500)
 
     def upload_assignment_evidence(self, **kwargs):
         required_fields = ['assignment_id', 'student_id', 'class_id', 'file_data']

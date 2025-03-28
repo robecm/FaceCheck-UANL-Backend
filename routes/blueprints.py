@@ -31,6 +31,8 @@ from routes.assignment_routes.upload_assignment_evidence_route import upload_ass
 from routes.assignment_routes.remove_assignment_evidence_route import remove_assignment_evidence_bp
 from routes.assignment_routes.grade_assignment_evidence_route import grade_assignment_evidence_bp
 from routes.assignment_routes.retrieve_assignment_evidences_route import retrieve_assignment_evidences_bp
+from routes.assignment_routes.retrieve_teacher_assignments_route import retrieve_teacher_assignments_bp
+from routes.student_routes.retrieve_student_assignments_route import retrieve_student_assignments_bp
 
 blueprints_list = [
     (verify_face_bp, '/api'),
@@ -65,5 +67,7 @@ blueprints_list = [
     (upload_assignment_evidence_bp, '/api'),
     (remove_assignment_evidence_bp, '/api'),
     (grade_assignment_evidence_bp, '/api'),
-    (retrieve_assignment_evidences_bp, '/api')
+    (retrieve_assignment_evidences_bp, '/api'),
+    (retrieve_teacher_assignments_bp, '/api'),
+    (retrieve_student_assignments_bp, '/api')
 ]
