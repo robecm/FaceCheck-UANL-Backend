@@ -2307,6 +2307,37 @@ paths:
                     type: array
                     items:
                       type: object
+                      properties:
+                        evidence_id:
+                          type: string
+                        assignment_id:
+                          type: string
+                        student_id:
+                          type: string
+                        class_id:
+                          type: string
+                        file_data:
+                          type: string
+                          description: Base64 encoded file data
+                        grade:
+                          type: number
+                          nullable: true
+                        feedback:
+                          type: string
+                          nullable: true
+                          description: Teacher's feedback on the submission
+                        file_name:
+                          type: string
+                          nullable: true
+                          description: Original name of the uploaded file
+                        file_extension:
+                          type: string
+                          nullable: true
+                          description: Extension of the uploaded file
+                        student_name:
+                          type: string
+                        student_username:
+                          type: string
                   status_code:
                     type: integer
         '400':
@@ -2352,7 +2383,7 @@ paths:
   /api/assignment/evidence/grade:
     put:
       summary: Grade assignment evidence
-      description: Assigns a grade to a submitted assignment evidence.
+      description: Assigns a grade and optional feedback to a submitted assignment evidence.
       tags:
         - Tareas
       requestBody:
@@ -2368,6 +2399,9 @@ paths:
                 grade:
                   type: number
                   description: Grade to assign to the evidence.
+                feedback:
+                  type: string
+                  description: Optional feedback text for the student.
               required:
                 - evidence_id
                 - grade
@@ -2381,13 +2415,16 @@ paths:
                 properties:
                   success:
                     type: boolean
+                    example: true
                   data:
                     type: object
                     properties:
                       evidence_id:
                         type: string
+                        example: "12345"
                   status_code:
                     type: integer
+                    example: 200
         '400':
           description: Missing required parameters
           content:
@@ -2397,10 +2434,13 @@ paths:
                 properties:
                   success:
                     type: boolean
+                    example: false
                   error:
                     type: string
+                    example: "Missing required parameter: evidence_id is required."
                   status_code:
                     type: integer
+                    example: 400
         '404':
           description: Evidence not found
           content:
@@ -2410,10 +2450,13 @@ paths:
                 properties:
                   success:
                     type: boolean
+                    example: false
                   error:
                     type: string
+                    example: "Evidence not found."
                   status_code:
                     type: integer
+                    example: 404
         '500':
           description: Internal server error
           content:
@@ -2423,10 +2466,13 @@ paths:
                 properties:
                   success:
                     type: boolean
+                    example: false
                   error:
                     type: string
+                    example: "Database error"
                   status_code:
                     type: integer
+                    example: 500
 
   /api/assignment/evidence/remove:
     delete:

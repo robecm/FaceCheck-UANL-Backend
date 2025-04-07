@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from modules.database_modules.assignment_database import AssignmentsDatabase
 import base64
+import os
 
 upload_assignment_evidence_bp = Blueprint('upload_assignment_evidence', __name__)
 db = AssignmentsDatabase()
@@ -16,6 +17,8 @@ def upload_assignment_evidence():
             student_id = data.get('student_id')
             class_id = data.get('class_id')
             file_data = data.get('file_data')
+            file_name = data.get('file_name')  # New parameter
+            file_extension = data.get('file_extension')  # New parameter
 
             # Check required fields from JSON
             if not all([assignment_id, student_id, class_id, file_data]):
@@ -55,15 +58,23 @@ def upload_assignment_evidence():
                     status_code=400
                 )), 400
 
+            # Extract file information
+            file_name = file.filename
+            _, file_extension = os.path.splitext(file_name)
+            if file_extension.startswith('.'):
+                file_extension = file_extension[1:]  # Remove leading dot
+
             # Convert file to base64
             file_data = base64.b64encode(file.read()).decode('utf-8')
 
-        # Call the database method
+        # Call the database method with all parameters
         result = db.upload_assignment_evidence(
             assignment_id=assignment_id,
             student_id=student_id,
             class_id=class_id,
-            file_data=file_data
+            file_data=file_data,
+            file_name=file_name,
+            file_extension=file_extension
         )
 
         if not result['success']:

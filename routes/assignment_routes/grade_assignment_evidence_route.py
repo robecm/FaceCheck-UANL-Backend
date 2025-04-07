@@ -13,10 +13,12 @@ def grade_assignment_evidence():
             data = request.get_json()
             evidence_id = data.get('evidence_id')
             grade = data.get('grade')
+            feedback = data.get('feedback')  # New parameter - optional
         else:
             # Process form data
             evidence_id = request.form.get('evidence_id')
             grade = request.form.get('grade')
+            feedback = request.form.get('feedback')  # New parameter - optional
 
         # Check required fields
         if not evidence_id:
@@ -33,8 +35,12 @@ def grade_assignment_evidence():
                 status_code=400
             )), 400
 
-        # Call the database method
-        result = db.grade_assignment_evidence(evidence_id=evidence_id, grade=grade)
+        # Call the database method with the optional feedback parameter
+        result = db.grade_assignment_evidence(
+            evidence_id=evidence_id,
+            grade=grade,
+            feedback=feedback
+        )
 
         return jsonify(result), result['status_code']
 
