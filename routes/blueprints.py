@@ -33,6 +33,11 @@ from routes.assignment_routes.grade_assignment_evidence_route import grade_assig
 from routes.assignment_routes.retrieve_assignment_evidences_route import retrieve_assignment_evidences_bp
 from routes.assignment_routes.retrieve_teacher_assignments_route import retrieve_teacher_assignments_bp
 from routes.student_routes.retrieve_student_assignments_route import retrieve_student_assignments_bp
+from routes.attendance_routes.get_class_attendance import get_class_attendance_bp
+from routes.attendance_routes.get_student_attendance import get_student_attendance_bp
+from routes.attendance_routes.update_attendance_route import update_attendance_bp
+from routes.attendance_routes.create_attendance_route import create_attendance_bp
+from routes.attendance_routes.delete_attendance_route import delete_attendance_bp
 
 blueprints_list = [
     (verify_face_bp, '/api'),
@@ -69,5 +74,10 @@ blueprints_list = [
     (grade_assignment_evidence_bp, '/api'),
     (retrieve_assignment_evidences_bp, '/api'),
     (retrieve_teacher_assignments_bp, '/api'),
-    (retrieve_student_assignments_bp, '/api')
+    (retrieve_student_assignments_bp, '/api'),
+    (get_class_attendance_bp, '/api'),
+    (get_student_attendance_bp, '/api'),
+    (update_attendance_bp, '/api'),
+    (create_attendance_bp, '/api'),
+    (delete_attendance_bp, '/api')
 ]
