@@ -12,7 +12,8 @@ def modify_user_info():
         body = request.form if request.form else request.get_json()
         print('Received request body:', body)  # Debugging print
         required_fields = ['user_id', 'user_type']
-        optional_fields = ['name', 'username', 'password', 'email', 'matnum', 'worknum','faculty', 'birthdate']
+        optional_fields = ['name', 'username', 'password', 'email',
+                           'matnum', 'worknum','faculty', 'birthdate']
 
         # Validate that the required field is present
         for field in required_fields:

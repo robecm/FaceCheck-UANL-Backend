@@ -11,14 +11,23 @@ def retrieve_user_info():
     try:
         user_type = request.args.get('user_type')
         if not user_type:
-            return jsonify({'success': False, 'error': 'User type must be provided', 'status_code': 400})
+            return jsonify(
+                {'success': False,
+                 'error': 'User type must be provided',
+                 'status_code': 400})
 
         if user_type not in ['student', 'teacher']:
-            return jsonify({'success': False, 'error': 'Invalid user type', 'status_code': 400})
+            return jsonify(
+                {'success': False,
+                 'error': 'Invalid user type',
+                 'status_code': 400})
 
         user_id = int(request.args.get('user_id'))
         if not user_id:
-            return jsonify({'success': False, 'error': 'User ID must be provided', 'status_code': 400})
+            return jsonify(
+                {'success': False,
+                 'error': 'User ID must be provided',
+                 'status_code': 400})
 
         user_info = db.retrieve_user_info(user_id, user_type)
 

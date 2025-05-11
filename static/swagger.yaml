@@ -26,6 +26,8 @@ tags:
     description: Operaciones relacionadas con los exámenes.
   - name: Usuarios
     description: Operaciones relacionadas con la información del usuario.
+  - name: Tareas
+    description: Operaciones relacionadas con las tareas.
 
 paths:
 
@@ -1868,3 +1870,894 @@ paths:
                     type: string
                   status_code:
                     type: integer
+
+  /api/assignment/create:
+    post:
+      summary: Create a new assignment
+      description: Creates a new assignment for a class with required details.
+      tags:
+        - Tareas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the assignment.
+                class_id:
+                  type: string
+                  description: ID of the class.
+                due_date:
+                  type: string
+                  description: Due date in format YYYY-MM-DD HH:MM:SS.
+                description:
+                  type: string
+                  description: Description of the assignment (optional).
+              required:
+                - title
+                - class_id
+                - due_date
+      responses:
+        '201':
+          description: Assignment created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      assignment_id:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields or invalid date format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/assignment/update:
+    put:
+      summary: Update an assignment
+      description: Updates an existing assignment with new details.
+      tags:
+        - Tareas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assignment_id:
+                  type: string
+                  description: ID of the assignment to update.
+                title:
+                  type: string
+                  description: New title of the assignment.
+                class_id:
+                  type: string
+                  description: New class ID for the assignment.
+                due_date:
+                  type: string
+                  description: New due date in format YYYY-MM-DD HH:MM:SS.
+                description:
+                  type: string
+                  description: New description of the assignment.
+              required:
+                - assignment_id
+      responses:
+        '200':
+          description: Assignment updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      assignment_id:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields, no fields to update, or invalid date format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '404':
+          description: Assignment not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/assignment/delete:
+    delete:
+      summary: Delete an assignment
+      description: Deletes an existing assignment by ID.
+      tags:
+        - Tareas
+      parameters:
+        - in: query
+          name: assignment_id
+          required: true
+          schema:
+            type: string
+          description: ID of the assignment to delete.
+      responses:
+        '200':
+          description: Assignment deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      assignment_id:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing assignment_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '404':
+          description: Assignment not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/class/assignments:
+    get:
+      summary: Get assignments for a class
+      description: Retrieves all assignments for a specific class.
+      tags:
+        - Clases
+      parameters:
+        - in: query
+          name: class_id
+          required: true
+          schema:
+            type: string
+          description: ID of the class.
+      responses:
+        '200':
+          description: Assignments retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing class_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '404':
+          description: Class not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/assignment/evidence/upload:
+    post:
+      summary: Upload assignment evidence
+      description: Uploads evidence for an assignment completion by a student.
+      tags:
+        - Tareas
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                assignment_id:
+                  type: string
+                  description: ID of the assignment.
+                student_id:
+                  type: string
+                  description: ID of the student.
+                class_id:
+                  type: string
+                  description: ID of the class.
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload as evidence.
+              required:
+                - assignment_id
+                - student_id
+                - class_id
+                - file
+          application/json:
+            schema:
+              type: object
+              properties:
+                assignment_id:
+                  type: string
+                  description: ID of the assignment.
+                student_id:
+                  type: string
+                  description: ID of the student.
+                class_id:
+                  type: string
+                  description: ID of the class.
+                file_data:
+                  type: string
+                  format: base64
+                  description: Base64-encoded file data.
+              required:
+                - assignment_id
+                - student_id
+                - class_id
+                - file_data
+      responses:
+        '201':
+          description: Evidence uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      evidence_id:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing required fields or no file provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '404':
+          description: Assignment, student, or class not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/assignment/evidence/list:
+    get:
+      summary: Get evidences for an assignment
+      description: Retrieves all submitted evidences for a specific assignment.
+      tags:
+        - Tareas
+      parameters:
+        - in: query
+          name: assignment_id
+          required: true
+          schema:
+            type: string
+          description: ID of the assignment.
+      responses:
+        '200':
+          description: Evidences retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        evidence_id:
+                          type: string
+                        assignment_id:
+                          type: string
+                        student_id:
+                          type: string
+                        class_id:
+                          type: string
+                        file_data:
+                          type: string
+                          description: Base64 encoded file data
+                        grade:
+                          type: number
+                          nullable: true
+                        feedback:
+                          type: string
+                          nullable: true
+                          description: Teacher's feedback on the submission
+                        file_name:
+                          type: string
+                          nullable: true
+                          description: Original name of the uploaded file
+                        file_extension:
+                          type: string
+                          nullable: true
+                          description: Extension of the uploaded file
+                        student_name:
+                          type: string
+                        student_username:
+                          type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing assignment_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '404':
+          description: Assignment not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/assignment/evidence/grade:
+    put:
+      summary: Grade assignment evidence
+      description: Assigns a grade and optional feedback to a submitted assignment evidence.
+      tags:
+        - Tareas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                evidence_id:
+                  type: string
+                  description: ID of the evidence to grade.
+                grade:
+                  type: number
+                  description: Grade to assign to the evidence.
+                feedback:
+                  type: string
+                  description: Optional feedback text for the student.
+              required:
+                - evidence_id
+                - grade
+      responses:
+        '200':
+          description: Evidence graded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      evidence_id:
+                        type: string
+                        example: "12345"
+                  status_code:
+                    type: integer
+                    example: 200
+        '400':
+          description: Missing required parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Missing required parameter: evidence_id is required."
+                  status_code:
+                    type: integer
+                    example: 400
+        '404':
+          description: Evidence not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Evidence not found."
+                  status_code:
+                    type: integer
+                    example: 404
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Database error"
+                  status_code:
+                    type: integer
+                    example: 500
+
+  /api/assignment/evidence/remove:
+    delete:
+      summary: Remove assignment evidence
+      description: Removes a submitted evidence for an assignment.
+      tags:
+        - Tareas
+      parameters:
+        - in: query
+          name: evidence_id
+          required: true
+          schema:
+            type: string
+          description: ID of the evidence to remove.
+      responses:
+        '200':
+          description: Evidence removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      evidence_id:
+                        type: string
+                  status_code:
+                    type: integer
+        '400':
+          description: Missing evidence_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '404':
+          description: Evidence not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  status_code:
+                    type: integer
+
+  /api/teacher/assignments:
+      get:
+        summary: Retrieve assignments for a teacher
+        description: Gets all assignments for classes taught by a specific teacher.
+        tags:
+          - Profesores
+        parameters:
+          - in: query
+            name: teacher_id
+            required: true
+            schema:
+              type: string
+            description: ID of the teacher
+        responses:
+          '200':
+            description: Assignments successfully retrieved
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: true
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          assignment_id:
+                            type: integer
+                            example: 1
+                          title:
+                            type: string
+                            example: "Homework 1"
+                          description:
+                            type: string
+                            example: "Complete exercises 1-10"
+                          due_date:
+                            type: string
+                            format: date-time
+                            example: "2023-12-15T23:59:59"
+                          class_id:
+                            type: integer
+                            example: 5
+                          class_name:
+                            type: string
+                            example: "Mathematics"
+                          semester:
+                            type: string
+                            example: "Fall 2023"
+                          group_num:
+                            type: string
+                            example: "A"
+                          submissions_count:
+                            type: integer
+                            example: 15
+                    status_code:
+                      type: integer
+                      example: 200
+          '400':
+            description: Missing teacher_id parameter
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: false
+                    error:
+                      type: string
+                      example: "Missing teacher_id parameter"
+                    status_code:
+                      type: integer
+                      example: 400
+          '404':
+            description: Teacher not found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: false
+                    error:
+                      type: string
+                      example: "Teacher not found"
+                    status_code:
+                      type: integer
+                      example: 404
+          '500':
+            description: Server error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: false
+                    error:
+                      type: string
+                      example: "Database error"
+                    status_code:
+                      type: integer
+                      example: 500
+
+  /api/student/assignments:
+    get:
+      summary: Retrieve assignments for a student
+      description: Gets all assignments for classes a student is enrolled in.
+      tags:
+        - Estudiantes
+      parameters:
+        - in: query
+          name: student_id
+          required: true
+          schema:
+            type: string
+          description: ID of the student
+      responses:
+        '200':
+          description: Assignments successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        assignment_id:
+                          type: integer
+                          example: 1
+                        title:
+                          type: string
+                          example: "Homework 1"
+                        description:
+                          type: string
+                          example: "Complete exercises 1-10"
+                        due_date:
+                          type: string
+                          format: date-time
+                          example: "2023-12-15T23:59:59"
+                        class_id:
+                          type: integer
+                          example: 5
+                        class_name:
+                          type: string
+                          example: "Mathematics"
+                        semester:
+                          type: string
+                          example: "Fall 2023"
+                        teacher_name:
+                          type: string
+                          example: "John Smith"
+                        submitted:
+                          type: boolean
+                          example: true
+                  status_code:
+                    type: integer
+                    example: 200
+        '400':
+          description: Missing student_id parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Missing student_id parameter"
+                  status_code:
+                    type: integer
+                    example: 400
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Student not found"
+                  status_code:
+                    type: integer
+                    example: 404
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Database error"
+                  status_code:
+                    type: integer
+                    example: 500
