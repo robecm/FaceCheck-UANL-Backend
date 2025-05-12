@@ -270,6 +270,50 @@ class LoginSignupDatabase:
                 print(f'Error checking user existence: {e}')  # Debugging print
                 return self.generate_response(success=False, error=str(e), status_code=500)
 
+    def get_face_by_student_id(self, student_id):
+        with db_connection(self.credentials) as conn:
+            try:
+                cur = conn.cursor()
+                query = """
+                    SELECT f.face_img
+                    FROM faces_students f
+                    WHERE f.student_id = %s
+                """
+                cur.execute(query, (student_id,))
+                result = cur.fetchone()
+                cur.close()
+
+                if result and result[0]:
+                    # Return the binary data directly from the database
+                    # without any encoding/decoding
+                    face_img_data = result[0]
+
+                    # Convert memoryview to bytes if needed
+                    if isinstance(face_img_data, memoryview):
+                        face_img_bytes = bytes(face_img_data)
+                    else:
+                        face_img_bytes = face_img_data
+
+
+                    return self.generate_response(
+                        success=True,
+                        data={'face_img_base64': face_img_bytes.decode('utf-8') if isinstance(face_img_bytes, bytes) else face_img_bytes},
+                        status_code=200
+                    )
+                else:
+                    return self.generate_response(
+                        success=False,
+                        error='Face image not found for the student',
+                        status_code=404
+                    )
+
+            except Exception as e:
+                return self.generate_response(
+                    success=False,
+                    error=str(e),
+                    status_code=500
+                )
+
     # Private method to generate a consistent JSON response
     @staticmethod
     def generate_response(success, error=None, status_code=200, **kwargs):
