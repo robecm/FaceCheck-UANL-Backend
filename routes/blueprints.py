@@ -37,6 +37,7 @@ from routes.attendance_routes.get_class_attendance import get_class_attendance_b
 from routes.attendance_routes.get_student_attendance import get_student_attendance_bp
 from routes.attendance_routes.modify_attendance_route import modify_attendance_bp
 from routes.attendance_routes.delete_attendance_route import delete_attendance_bp
+from routes.teacher_routes.retrieve_teacher_exams_route import retrieve_teacher_exams_bp
 
 blueprints_list = [
     (verify_face_bp, '/api'),
@@ -77,5 +78,6 @@ blueprints_list = [
     (get_class_attendance_bp, '/api'),
     (get_student_attendance_bp, '/api'),
     (modify_attendance_bp, '/api'),
-    (delete_attendance_bp, '/api')
+    (delete_attendance_bp, '/api'),
+    (retrieve_teacher_exams_bp, '/api')
 ]
