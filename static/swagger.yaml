@@ -28,6 +28,8 @@ tags:
     description: Operaciones relacionadas con la información del usuario.
   - name: Tareas
     description: Operaciones relacionadas con las tareas.
+  - name: Asistencia
+    description: Operaciones relacionadas con la asistencia.
 
 paths:
 
@@ -773,6 +775,14 @@ paths:
                     type: integer
 
   /api/class/delete-student:
+    get:
+      description: New endpoint
+      responses:
+        200:
+          description: New response
+          content:
+            application/json:
+              schema:
     delete:
       summary: Delete a student from a class
       description: Deletes a student from a class based on student_id and class_id.
@@ -2761,3 +2771,269 @@ paths:
                   status_code:
                     type: integer
                     example: 500
+
+  /api/attendance/modify:
+      put:
+        summary: Create or update attendance records
+        description: Creates new attendance records or updates existing ones if records already exist for the student(s), class, and date.
+        tags:
+          - Asistencia
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  class_id:
+                    type: integer
+                    description: ID of the class for the attendance record.
+                  student_id:
+                    oneOf:
+                      - type: integer
+                      - type: array
+                        items:
+                          type: integer
+                    description: ID of a single student or an array of student IDs.
+                  student_ids:
+                    type: array
+                    items:
+                      type: integer
+                    description: Alternative parameter for multiple student IDs.
+                  attendance_date:
+                    type: string
+                    format: date
+                    description: Date of attendance (YYYY-MM-DD).
+                  attendance_time:
+                    type: string
+                    format: time
+                    description: Optional time of attendance (HH:MM:SS).
+                  present:
+                    type: boolean
+                    description: Attendance status (true = present, false = absent).
+                    default: true
+                required:
+                  - class_id
+                  - attendance_date
+                example:
+                  class_id: 4
+                  student_id: [102, 103]
+                  attendance_date: "2023-10-10"
+                  attendance_time: "09:00:00"
+                  present: true
+              examples:
+                singleStudent:
+                  summary: Single student attendance
+                  value:
+                    class_id: 4
+                    student_id: 102
+                    attendance_date: "2023-10-10"
+                    attendance_time: "09:00:00"
+                    present: true
+                multipleStudents:
+                  summary: Multiple students attendance
+                  value:
+                    class_id: 4
+                    student_id: [102, 103, 104]
+                    attendance_date: "2023-10-10"
+                    attendance_time: "09:00:00"
+                    present: true
+        responses:
+          '201':
+            description: Attendance records created or updated successfully
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      description: Indicates if the operation was successful.
+                      example: true
+                    data:
+                      type: object
+                      properties:
+                        created_attendance_ids:
+                          type: array
+                          items:
+                            type: integer
+                          description: IDs of newly created attendance records.
+                        updated_attendance_ids:
+                          type: array
+                          items:
+                            type: integer
+                          description: IDs of updated attendance records.
+                      example:
+                        created_attendance_ids: [501, 502]
+                        updated_attendance_ids: []
+                    status_code:
+                      type: integer
+                      description: HTTP status code.
+                      example: 201
+          '400':
+            description: Missing required fields or invalid student IDs format
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: false
+                    error:
+                      type: string
+                      example: "Missing required field: class_id"
+                    status_code:
+                      type: integer
+                      example: 400
+          '404':
+            description: One or more student IDs not found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: false
+                    error:
+                      type: string
+                      example: "The following student IDs do not exist: 999, 998"
+                    status_code:
+                      type: integer
+                      example: 404
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: false
+                    error:
+                      type: string
+                      example: "Database error"
+                    status_code:
+                      type: integer
+                      example: 500
+      post:
+        summary: Create or update attendance records
+        description: Creates new attendance records or updates existing ones if records already exist for the student(s), class, and date.
+        tags:
+          - Asistencia
+
+  /api/attendance/class:
+      get:
+        summary: Retrieve attendance records for a class
+        description: Gets all attendance records for a specific class, including student names and registration numbers.
+        tags:
+          - Asistencia
+        parameters:
+          - in: query
+            name: class_id
+            required: true
+            schema:
+              type: string
+            description: ID of the class to get attendance records for.
+        responses:
+          '200':
+            description: Attendance records retrieved successfully
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: true
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          attendance_id:
+                            type: integer
+                            example: 42
+                          student_id:
+                            type: integer
+                            example: 102
+                          class_id:
+                            type: integer
+                            example: 4
+                          date:
+                            type: string
+                            format: date
+                            example: "2023-10-15"
+                          time:
+                            type: string
+                            format: time
+                            example: "09:00:00"
+                          present:
+                            type: boolean
+                            example: true
+                          student_name:
+                            type: string
+                            example: "Juan Perez"
+                          student_matnum:
+                            type: string
+                            example: "A012345"
+                    status_code:
+                      type: integer
+                      example: 200
+                example:
+                  success: true
+                  data: [
+                    {
+                      "attendance_id": 42,
+                      "student_id": 102,
+                      "class_id": 4,
+                      "date": "2023-10-15",
+                      "time": "09:00:00",
+                      "present": true,
+                      "student_name": "Juan Perez",
+                      "student_matnum": "A012345"
+                    },
+                    {
+                      "attendance_id": 43,
+                      "student_id": 103,
+                      "class_id": 4,
+                      "date": "2023-10-15",
+                      "time": "09:00:00",
+                      "present": false,
+                      "student_name": "Maria Rodriguez",
+                      "student_matnum": "A012346"
+                    }
+                  ]
+                  status_code: 200
+          '400':
+            description: Missing class_id parameter
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+                example:
+                  success: false
+                  error: "Missing class_id parameter"
+                  status_code: 400
+          '404':
+            description: Class not found
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+                example:
+                  success: false
+                  error: "Class not found."
+                  status_code: 404
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ErrorResponse'
+                example:
+                  success: false
+                  error: "Database error"
+                  status_code: 500

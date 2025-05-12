@@ -189,33 +189,72 @@ class AttendanceDatabase:
 
     def get_attendance_by_class(self, class_id):
         """
-        Retrieves all attendance records for a specific class.
+        Retrieves attendance records for a specific class.
+
+        Args:
+            class_id: The ID of the class
+
+        Returns:
+            A dictionary with the response containing attendance records
         """
-        query = """
-            SELECT * FROM attendance
-            WHERE class_id = %s;
-        """
+        if not class_id:
+            return self.generate_response(success=False, error='Class ID must be provided.', status_code=400)
+
         with db_connection(self.credentials) as conn:
             try:
                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+                # Check if the class exists
+                check_query = """
+                    SELECT 1 FROM classes
+                    WHERE class_id = %s;
+                """
+                cur.execute(check_query, (class_id,))
+                existing_class = cur.fetchone()
+                if not existing_class:
+                    return self.generate_response(success=False, error='Class not found.', status_code=404)
+
+                # Retrieve the attendance records for the class with student information
+                query = """
+                    SELECT 
+                        a.attendance_id, 
+                        a.student_id, 
+                        a.class_id, 
+                        a.date,
+                        a.time,
+                        a.present,
+                        s.name as student_name,
+                        s.matnum as student_matnum
+                    FROM 
+                        attendance a
+                    JOIN 
+                        users_students s ON a.student_id = s.id
+                    WHERE 
+                        a.class_id = %s
+                    ORDER BY 
+                        a.date DESC, s.name ASC;
+                """
                 cur.execute(query, (class_id,))
-                records = cur.fetchall()
+                attendance_records = cur.fetchall()
                 cur.close()
 
-                # Convert datetime objects to strings for JSON serialization
-                data = []
-                for record in records:
+                # Convert database records to dictionary
+                records_dict = []
+                for record in attendance_records:
                     record_dict = dict(record)
-                    if 'date' in record_dict and record_dict['date']:
+                    # Convert date and time objects to strings for JSON serialization
+                    if 'date' in record_dict and isinstance(record_dict['date'], date):
                         record_dict['date'] = record_dict['date'].isoformat()
-                    if 'time' in record_dict and record_dict['time']:
-                        record_dict['time'] = record_dict['time'].isoformat()
-                    data.append(record_dict)
+                    if 'time' in record_dict and isinstance(record_dict['time'], time):
+                        record_dict['time'] = record_dict['time'].strftime('%H:%M:%S')
+                    records_dict.append(record_dict)
 
-                return self.generate_response(success=True, data=data, status_code=200)
-            except psycopg2.DatabaseError as e:
+                return self.generate_response(success=True, error=None, status_code=200, data=records_dict)
+
+            except psycopg2.Error as e:
                 error_message = e.pgerror if e.pgerror else str(e)
-                return self.generate_response(success=False, error=error_message, status_code=500)
+                print(f"Error retrieving class attendance: {error_message}")
+                return self.generate_response(success=False, error=error_message, status_code=500, error_code=e.pgcode)
 
     @staticmethod
     def generate_response(success, error=None, status_code=200, **kwargs):
