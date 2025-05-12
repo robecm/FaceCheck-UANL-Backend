@@ -428,6 +428,15 @@ paths:
                     type: integer
 
   /api/login/teacher:
+    get:
+      description: New endpoint
+      responses:
+        200:
+          description: New response
+          content:
+            application/json:
+              schema:
+                :
     post:
       summary: Iniciar sesión de profesor
       description: Permite a un profesor iniciar sesión proporcionando su número de trabajo y contraseña.
@@ -783,6 +792,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
     delete:
       summary: Delete a student from a class
       description: Deletes a student from a class based on student_id and class_id.
@@ -3007,33 +3017,112 @@ paths:
                     }
                   ]
                   status_code: 200
+
+  /api/teacher/exams:
+      get:
+        summary: Retrieve exams for a teacher
+        description: Gets all exams for classes taught by a specific teacher.
+        tags:
+          - Profesores
+        parameters:
+          - in: query
+            name: teacher_id
+            required: true
+            schema:
+              type: string
+            description: ID of the teacher
+        responses:
+          '200':
+            description: Exams retrieved successfully
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          exam_id:
+                            type: integer
+                          exam_name:
+                            type: string
+                          class_id:
+                            type: integer
+                          class_room:
+                            type: string
+                          date:
+                            type: string
+                            format: date-time
+                          hour:
+                            type: string
+                            format: time
+                    error:
+                      type: string
+                      nullable: true
+                    status_code:
+                      type: integer
+                example:
+                  success: true
+                  data: [
+                    {
+                      "exam_id": 6,
+                      "exam_name": "Medio Curso",
+                      "class_id": 7,
+                      "class_room": "1101",
+                      "date": "Thu, 16 Jan 2025 00:00:00 GMT",
+                      "hour": "13:40:00"
+                    },
+                    {
+                      "exam_id": 4,
+                      "exam_name": "Medio Curso",
+                      "class_id": 4,
+                      "class_room": "1101",
+                      "date": "Thu, 23 Jan 2025 00:00:00 GMT",
+                      "hour": "12:00:00"
+                    }
+                  ]
+                  error: null
+                  status_code: 200
           '400':
-            description: Missing class_id parameter
+            description: Missing teacher_id parameter
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/ErrorResponse'
-                example:
-                  success: false
-                  error: "Missing class_id parameter"
-                  status_code: 400
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    error:
+                      type: string
+                    status_code:
+                      type: integer
           '404':
-            description: Class not found
+            description: Teacher not found or no exams found
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/ErrorResponse'
-                example:
-                  success: false
-                  error: "Class not found."
-                  status_code: 404
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    error:
+                      type: string
+                    status_code:
+                      type: integer
           '500':
             description: Internal server error
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/ErrorResponse'
-                example:
-                  success: false
-                  error: "Database error"
-                  status_code: 500
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    error:
+                      type: string
+                    status_code:
+                      type: integer
