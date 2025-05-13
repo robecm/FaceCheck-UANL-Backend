@@ -51,9 +51,6 @@ def teacher_login():
                 status_code=404
             )), 404
 
-        # Log to verify the data of the retrieved user
-        print("Retrieved user data:", user_registered_data)
-
         # Compare the entered password with the one stored in the database
         hashed_password = user_registered_data['data']['password']
         face_img_base64 = user_registered_data['data']['face_img']
